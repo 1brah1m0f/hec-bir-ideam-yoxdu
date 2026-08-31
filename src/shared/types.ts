@@ -31,6 +31,8 @@ export interface Ingredient {
   color: [number, number, number]
   /** how strongly one gram of this tints the liquid relative to others */
   strength: number
+  /** loose volume in millilitres one gram takes up — leaves are mostly air */
+  bulk: number
   weightClass: WeightClass
   shape: ShapeKind
   /** short neutral framing tag used by the commentary engine, e.g. "axşam üçün" */

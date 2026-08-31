@@ -418,18 +418,48 @@ export interface Sprite {
   size: number
 }
 
+export interface SpriteOptions {
+  /** a colour blended over the drawn pixels, so no two variants match exactly */
+  tint?: string
+  tintAmount?: number
+  /** blur radius in CSS pixels — used for the pieces sitting deeper in the jar */
+  blur?: number
+}
+
 /**
  * Filling a dozen paths per piece per frame is what pushes the blender off 60fps,
  * so each shape is rasterised once and the glass blits rotated copies.
+ *
+ * Tint and blur are baked in here rather than applied per frame: a canvas filter
+ * costs about as much as redrawing the paths, and there are only a handful of
+ * distinct combinations.
  */
-export function makeSprite(kind: ShapeKind, size: number, dpr: number, seed: number): Sprite {
-  const side = Math.max(4, Math.ceil(size * REACH * 2))
+export function makeSprite(
+  kind: ShapeKind,
+  size: number,
+  dpr: number,
+  seed: number,
+  opts: SpriteOptions = {},
+): Sprite {
+  const blur = opts.blur ?? 0
+  // the blur needs room to fall off, or it is clipped into a hard square edge
+  const side = Math.max(4, Math.ceil(size * REACH * 2 + blur * 5))
   const canvas = document.createElement('canvas')
   canvas.width = Math.ceil(side * dpr)
   canvas.height = Math.ceil(side * dpr)
   const ctx = canvas.getContext('2d')!
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   ctx.translate(side / 2, side / 2)
+  if (blur > 0) ctx.filter = `blur(${blur}px)`
   DRAWERS[kind](ctx, size, seed)
+  ctx.filter = 'none'
+
+  if (opts.tint && opts.tintAmount) {
+    // source-atop keeps the tint inside the shape instead of washing the box
+    ctx.globalCompositeOperation = 'source-atop'
+    ctx.globalAlpha = opts.tintAmount
+    ctx.fillStyle = opts.tint
+    ctx.fillRect(-side, -side, side * 2, side * 2)
+  }
   return { canvas, side, size }
 }

@@ -26,6 +26,8 @@ interface Registration {
 interface GlassApi {
   register: (key: string, el: HTMLElement | null, fit: number) => void
   pour: () => void
+  /** Lights one ingredient's pieces in the jar and dims the rest. */
+  highlight: (id: string | null) => void
 }
 
 const Ctx = createContext<GlassApi | null>(null)
@@ -72,6 +74,10 @@ export function GlassStage({ items, color, name, mode, children }: Props) {
 
   const pour = useCallback(() => {
     engineRef.current?.pour()
+  }, [])
+
+  const highlight = useCallback((id: string | null) => {
+    engineRef.current?.setHighlight(id)
   }, [])
 
   useEffect(() => {
@@ -146,10 +152,7 @@ export function GlassStage({ items, color, name, mode, children }: Props) {
   }, [])
 
   useEffect(() => {
-    engineRef.current?.setBlend(
-      items.map((i) => ({ ingredientId: i.ingredientId, grams: i.grams })),
-      color,
-    )
+    engineRef.current?.setBlend(items, color)
   }, [items, color])
 
   useEffect(() => {
@@ -160,7 +163,10 @@ export function GlassStage({ items, color, name, mode, children }: Props) {
     engineRef.current?.setMode(mode)
   }, [mode])
 
-  const api = useMemo<GlassApi>(() => ({ register, pour }), [register, pour])
+  const api = useMemo<GlassApi>(
+    () => ({ register, pour, highlight }),
+    [register, pour, highlight],
+  )
 
   return (
     <Ctx.Provider value={api}>

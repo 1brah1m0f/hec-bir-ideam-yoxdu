@@ -710,18 +710,20 @@ export function drawPileShade(
   g: Geom,
   color: [number, number, number],
   fill: number,
+  level: number,
 ) {
-  if (fill <= 0.02) return
-  const topY = g.bottom - g.pileH
+  if (fill <= 0.02 || level <= 0.01) return
+  const pileH = level * g.bodyH
+  const topY = g.bottom - pileH
   ctx.save()
-  ctx.clip(g.pileClip)
+  ctx.clip(g.inner)
 
-  const grad = ctx.createLinearGradient(0, topY - g.pileH * 0.3, 0, g.bottom)
+  const grad = ctx.createLinearGradient(0, topY - pileH * 0.3, 0, g.bottom)
   grad.addColorStop(0, 'rgba(0,0,0,0)')
   grad.addColorStop(0.55, rgba(mix(color, BLACK, 0.72), 0.16 * fill))
   grad.addColorStop(1, rgba(mix(color, BLACK, 0.8), 0.38 * fill))
   ctx.fillStyle = grad
-  ctx.fillRect(g.cx - g.maxHalf * 1.2, topY - g.pileH * 0.3, g.maxHalf * 2.4, g.pileH * 1.4)
+  ctx.fillRect(g.cx - g.maxHalf * 1.2, topY - pileH * 0.3, g.maxHalf * 2.4, pileH * 1.4)
 
   // the heap catches the key light along its left flank
   ctx.globalCompositeOperation = 'lighter'
@@ -729,7 +731,7 @@ export function drawPileShade(
   lit.addColorStop(0, rgba(mix(color, WHITE, 0.55), 0.26 * fill))
   lit.addColorStop(1, 'rgba(0,0,0,0)')
   ctx.fillStyle = lit
-  ctx.fillRect(g.cx - g.maxHalf * 1.2, topY - g.pileH * 0.3, g.maxHalf * 2.4, g.pileH * 1.4)
+  ctx.fillRect(g.cx - g.maxHalf * 1.2, topY - pileH * 0.3, g.maxHalf * 2.4, pileH * 1.4)
   ctx.restore()
 }
 

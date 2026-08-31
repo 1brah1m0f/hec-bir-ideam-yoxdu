@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { CATEGORIES, INGREDIENTS } from '../../shared/data/ingredients'
+import { useGlass } from './GlassStage'
 import { manat } from '../../shared/lib/pricing'
 import { IngredientGlyph } from './IngredientGlyph'
 
@@ -8,6 +10,11 @@ interface Props {
 }
 
 export function IngredientPicker({ selected, onToggle }: Props) {
+  const { highlight } = useGlass()
+
+  // navigating away mid-hover would otherwise leave the jar dimmed
+  useEffect(() => () => highlight(null), [highlight])
+
   return (
     <div className="space-y-7">
       {CATEGORIES.map((cat) => (
@@ -24,6 +31,10 @@ export function IngredientPicker({ selected, onToggle }: Props) {
                   key={ing.id}
                   type="button"
                   onClick={() => onToggle(ing.id)}
+                  onPointerEnter={() => highlight(ing.id)}
+                  onPointerLeave={() => highlight(null)}
+                  onFocus={() => highlight(ing.id)}
+                  onBlur={() => highlight(null)}
                   aria-pressed={active}
                   title={ing.note}
                   className={[

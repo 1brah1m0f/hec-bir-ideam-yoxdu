@@ -11,6 +11,8 @@ export const INGREDIENTS = catalog.ingredients as unknown as Ingredient[]
 export const CURRENCY = catalog.currency
 export const TOTAL_GRAMS = catalog.totalGrams
 export const PACKAGING_FEE = catalog.packagingFee
+/** ml per gram of a mid blend — what a full jar is calibrated against */
+export const REFERENCE_BULK = catalog.referenceBulk
 export const DELIVERY = catalog.delivery
 export const BAKU_CITIES: string[] = catalog.bakuCities
 export const CITIES: string[] = catalog.cities

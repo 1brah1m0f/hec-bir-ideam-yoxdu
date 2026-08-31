@@ -2,8 +2,15 @@
   "currency": "AZN",
   "totalGrams": 100,
   "packagingFee": 2.5,
-  "delivery": { "baku": 3, "regions": 5, "freeOver": 40 },
-  "bakuCities": ["Bakı", "Sumqayıt"],
+  "delivery": {
+    "baku": 3,
+    "regions": 5,
+    "freeOver": 40
+  },
+  "bakuCities": [
+    "Bakı",
+    "Sumqayıt"
+  ],
   "cities": [
     "Bakı",
     "Sumqayıt",
@@ -22,204 +29,340 @@
       "name": "Qara çay",
       "category": "baza",
       "price": 9,
-      "color": [126, 54, 22],
+      "color": [
+        126,
+        54,
+        22
+      ],
       "strength": 1.5,
       "weightClass": "mid",
       "shape": "tea-black",
-      "mood": ["səhər üçün", "soyuq havalar üçün"],
-      "note": "Lənkəran plantasiyalarından tam fermentasiya — dolğun, tünd, klassik."
+      "mood": [
+        "səhər üçün",
+        "soyuq havalar üçün"
+      ],
+      "note": "Lənkəran plantasiyalarından tam fermentasiya — dolğun, tünd, klassik.",
+      "bulk": 3.4
     },
     {
       "id": "yasil-cay",
       "name": "Yaşıl çay",
       "category": "baza",
       "price": 11,
-      "color": [150, 158, 82],
+      "color": [
+        150,
+        158,
+        82
+      ],
       "strength": 1.1,
       "weightClass": "mid",
       "shape": "tea-green",
-      "mood": ["səhər üçün", "gün ortası üçün"],
-      "note": "Yüngül fermentasiya, ot və təzə ot notu. Gün ortası üçün."
+      "mood": [
+        "səhər üçün",
+        "gün ortası üçün"
+      ],
+      "note": "Yüngül fermentasiya, ot və təzə ot notu. Gün ortası üçün.",
+      "bulk": 3.7
     },
     {
       "id": "ag-cay",
       "name": "Ağ çay",
       "category": "baza",
       "price": 24,
-      "color": [206, 190, 132],
+      "color": [
+        206,
+        190,
+        132
+      ],
       "strength": 0.7,
       "weightClass": "light",
       "shape": "tea-white",
-      "mood": ["gün ortası üçün", "axşam üçün"],
-      "note": "Yalnız gənc tumurcuqlar. Ən zərif baza — kölgəsi az, ətri uzun."
+      "mood": [
+        "gün ortası üçün",
+        "axşam üçün"
+      ],
+      "note": "Yalnız gənc tumurcuqlar. Ən zərif baza — kölgəsi az, ətri uzun.",
+      "bulk": 4.8
     },
     {
       "id": "keklikotu",
       "name": "Kəklikotu",
       "category": "ot",
       "price": 8,
-      "color": [122, 128, 70],
+      "color": [
+        122,
+        128,
+        70
+      ],
       "strength": 1.2,
       "weightClass": "light",
       "shape": "thyme",
-      "mood": ["soyuq havalar üçün", "axşam üçün"],
-      "note": "Şəki dağlarından yığılan quru kəklikotu. Kəskin, tanış, isti."
+      "mood": [
+        "soyuq havalar üçün",
+        "axşam üçün"
+      ],
+      "note": "Şəki dağlarından yığılan quru kəklikotu. Kəskin, tanış, isti.",
+      "bulk": 5.2
     },
     {
       "id": "nane",
       "name": "Nanə",
       "category": "ot",
       "price": 7.5,
-      "color": [104, 152, 96],
+      "color": [
+        104,
+        152,
+        96
+      ],
       "strength": 1.3,
       "weightClass": "light",
       "shape": "mint",
-      "mood": ["yay üçün", "yeməkdən sonra"],
-      "note": "Sərinlədən, yeməkdən sonra ağırlığı götürən."
+      "mood": [
+        "yay üçün",
+        "yeməkdən sonra"
+      ],
+      "note": "Sərinlədən, yeməkdən sonra ağırlığı götürən.",
+      "bulk": 5.5
     },
     {
       "id": "cobanyastigi",
       "name": "Çobanyastığı",
       "category": "ot",
       "price": 12,
-      "color": [214, 172, 66],
+      "color": [
+        214,
+        172,
+        66
+      ],
       "strength": 1.15,
       "weightClass": "light",
       "shape": "chamomile",
-      "mood": ["axşam üçün", "gecə üçün"],
-      "note": "Bütöv çiçək başları. Yumşaq bal notu, axşamın sakit tərəfi."
+      "mood": [
+        "axşam üçün",
+        "gecə üçün"
+      ],
+      "note": "Bütöv çiçək başları. Yumşaq bal notu, axşamın sakit tərəfi.",
+      "bulk": 5
     },
     {
       "id": "melissa",
       "name": "Melissa",
       "category": "ot",
       "price": 10,
-      "color": [154, 172, 104],
+      "color": [
+        154,
+        172,
+        104
+      ],
       "strength": 0.95,
       "weightClass": "light",
       "shape": "melissa",
-      "mood": ["axşam üçün"],
-      "note": "Limon otu. Yüngül sitrus, heç bir turşuluq yox."
+      "mood": [
+        "axşam üçün"
+      ],
+      "note": "Limon otu. Yüngül sitrus, heç bir turşuluq yox.",
+      "bulk": 5.2
     },
     {
       "id": "lavanda",
       "name": "Lavanda",
       "category": "ot",
       "price": 16,
-      "color": [146, 122, 168],
+      "color": [
+        146,
+        122,
+        168
+      ],
       "strength": 1.45,
       "weightClass": "light",
       "shape": "lavender",
-      "mood": ["gecə üçün", "axşam üçün"],
-      "note": "Az miqdarda güclüdür. Bir çimdik bütün qarışığı dəyişir."
+      "mood": [
+        "gecə üçün",
+        "axşam üçün"
+      ],
+      "note": "Az miqdarda güclüdür. Bir çimdik bütün qarışığı dəyişir.",
+      "bulk": 2.6
     },
     {
       "id": "dag-cayi",
       "name": "Dağ çayı",
       "category": "ot",
       "price": 14,
-      "color": [176, 168, 106],
+      "color": [
+        176,
+        168,
+        106
+      ],
       "strength": 0.9,
       "weightClass": "light",
       "shape": "mountain-tea",
-      "mood": ["soyuq havalar üçün", "axşam üçün"],
-      "note": "Şirvan yaylaqlarının otu — quru saman və bal arası."
+      "mood": [
+        "soyuq havalar üçün",
+        "axşam üçün"
+      ],
+      "note": "Şirvan yaylaqlarının otu — quru saman və bal arası.",
+      "bulk": 5.4
     },
     {
       "id": "alma",
       "name": "Alma",
       "category": "meyve",
       "price": 6.5,
-      "color": [196, 138, 68],
+      "color": [
+        196,
+        138,
+        68
+      ],
       "strength": 0.85,
       "weightClass": "heavy",
       "shape": "apple",
-      "mood": ["payız üçün", "gün ortası üçün"],
-      "note": "Quba almasının qurusu. Təbii şirinlik, kömür qatmır."
+      "mood": [
+        "payız üçün",
+        "gün ortası üçün"
+      ],
+      "note": "Quba almasının qurusu. Təbii şirinlik, kömür qatmır.",
+      "bulk": 2.9
     },
     {
       "id": "zogal",
       "name": "Zoğal",
       "category": "meyve",
       "price": 13,
-      "color": [150, 40, 48],
+      "color": [
+        150,
+        40,
+        48
+      ],
       "strength": 1.5,
       "weightClass": "heavy",
       "shape": "cornel",
-      "mood": ["soyuq havalar üçün", "payız üçün"],
-      "note": "Turşməzə, dərin qırmızı rəng verir. Payızın öz dadı."
+      "mood": [
+        "soyuq havalar üçün",
+        "payız üçün"
+      ],
+      "note": "Turşməzə, dərin qırmızı rəng verir. Payızın öz dadı.",
+      "bulk": 2.1
     },
     {
       "id": "itburnu",
       "name": "İtburnu",
       "category": "meyve",
       "price": 9.5,
-      "color": [186, 62, 42],
+      "color": [
+        186,
+        62,
+        42
+      ],
       "strength": 1.6,
       "weightClass": "heavy",
       "shape": "rosehip",
-      "mood": ["soyuq havalar üçün", "qış üçün"],
-      "note": "C vitamini ilə tanınan qırmızı meyvə. Qış qarışığının onurğası."
+      "mood": [
+        "soyuq havalar üçün",
+        "qış üçün"
+      ],
+      "note": "C vitamini ilə tanınan qırmızı meyvə. Qış qarışığının onurğası.",
+      "bulk": 2.8
     },
     {
       "id": "portagal-qabigi",
       "name": "Portağal qabığı",
       "category": "meyve",
       "price": 8.5,
-      "color": [206, 118, 44],
+      "color": [
+        206,
+        118,
+        44
+      ],
       "strength": 1.2,
       "weightClass": "heavy",
       "shape": "orange-peel",
-      "mood": ["səhər üçün", "qış üçün"],
-      "note": "Günəşdə qurudulmuş qabıq — ətri stəkan açılan kimi gəlir."
+      "mood": [
+        "səhər üçün",
+        "qış üçün"
+      ],
+      "note": "Günəşdə qurudulmuş qabıq — ətri stəkan açılan kimi gəlir.",
+      "bulk": 3.6
     },
     {
       "id": "darcin",
       "name": "Darçın",
       "category": "edviyyat",
       "price": 11,
-      "color": [140, 74, 36],
+      "color": [
+        140,
+        74,
+        36
+      ],
       "strength": 1.7,
       "weightClass": "heavy",
       "shape": "cinnamon",
-      "mood": ["soyuq havalar üçün", "qış üçün"],
-      "note": "Seylon qabığı, əl ilə sındırılıb. İsti, şirin, ağır."
+      "mood": [
+        "soyuq havalar üçün",
+        "qış üçün"
+      ],
+      "note": "Seylon qabığı, əl ilə sındırılıb. İsti, şirin, ağır.",
+      "bulk": 3.2
     },
     {
       "id": "zencefil",
       "name": "Zəncəfil",
       "category": "edviyyat",
       "price": 10.5,
-      "color": [198, 156, 86],
+      "color": [
+        198,
+        156,
+        86
+      ],
       "strength": 1.6,
       "weightClass": "heavy",
       "shape": "ginger",
-      "mood": ["soyuq havalar üçün", "səhər üçün"],
-      "note": "Kəsilmiş quru kök. Boğazda yüngül istilik buraxır."
+      "mood": [
+        "soyuq havalar üçün",
+        "səhər üçün"
+      ],
+      "note": "Kəsilmiş quru kök. Boğazda yüngül istilik buraxır.",
+      "bulk": 2.3
     },
     {
       "id": "hil",
       "name": "Hil",
       "category": "edviyyat",
       "price": 28,
-      "color": [162, 168, 118],
+      "color": [
+        162,
+        168,
+        118
+      ],
       "strength": 1.5,
       "weightClass": "heavy",
       "shape": "cardamom",
-      "mood": ["səhər üçün", "qış üçün"],
-      "note": "Yaşıl qozalar bütöv qalır. Ən bahalı, ən az lazım olan."
+      "mood": [
+        "səhər üçün",
+        "qış üçün"
+      ],
+      "note": "Yaşıl qozalar bütöv qalır. Ən bahalı, ən az lazım olan.",
+      "bulk": 4.2
     },
     {
       "id": "mixek",
       "name": "Mixək",
       "category": "edviyyat",
       "price": 15,
-      "color": [104, 58, 34],
+      "color": [
+        104,
+        58,
+        34
+      ],
       "strength": 1.9,
       "weightClass": "heavy",
       "shape": "clove",
-      "mood": ["qış üçün", "soyuq havalar üçün"],
-      "note": "Çox güclüdür — iki-üç dənə bütün çaydanı tutur."
+      "mood": [
+        "qış üçün",
+        "soyuq havalar üçün"
+      ],
+      "note": "Çox güclüdür — iki-üç dənə bütün çaydanı tutur.",
+      "bulk": 2
     }
-  ]
+  ],
+  "referenceBulk": 3.6
 }

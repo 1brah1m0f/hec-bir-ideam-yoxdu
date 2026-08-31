@@ -2,7 +2,9 @@ import { BY_ID, isBase, TOTAL_GRAMS } from '../../shared/data/ingredients'
 import { LEVEL_LABEL } from '../../shared/lib/blend'
 import { rgb } from '../../shared/lib/blend'
 import type { Level, WeighedItem } from '../../shared/types'
+import { useEffect } from 'react'
 import { Counter } from './Reveal'
+import { useGlass } from './GlassStage'
 
 const LEVELS: Level[] = ['az', 'orta', 'cox']
 
@@ -13,6 +15,9 @@ interface Props {
 }
 
 export function ProportionList({ items, onLevel, onRemove }: Props) {
+  const { highlight } = useGlass()
+  useEffect(() => () => highlight(null), [highlight])
+
   if (items.length === 0) {
     return (
       <div className="rounded-[3px] border border-dashed border-cream/12 px-5 py-9 text-center">
@@ -48,7 +53,12 @@ export function ProportionList({ items, onLevel, onRemove }: Props) {
           const ing = BY_ID[it.ingredientId]
           const base = isBase(it.ingredientId)
           return (
-            <li key={it.ingredientId} className="flex items-center gap-3 py-3 sm:gap-4">
+            <li
+              key={it.ingredientId}
+              onPointerEnter={() => highlight(it.ingredientId)}
+              onPointerLeave={() => highlight(null)}
+              className="flex items-center gap-3 py-3 transition-colors duration-300 hover:bg-cream/[0.03] sm:gap-4"
+            >
               <span
                 aria-hidden="true"
                 className="h-6 w-[3px] shrink-0 rounded-full"

@@ -51,13 +51,29 @@ kimi görünür.
 Qarışdırıcıda bankanın üstündə keçid var: **Quru qarışıq** və **Dəmlənmiş**.
 Hər ikisi eyni bankadır, eyni tərkiblə.
 
-**Quru** — qapaq bağlı, yığın dibdə. Yığın həqiqi nisbətlərdən qurulur: 50 q qara
-çay seçmisənsə parçaların yarısı qara çay yarpağıdır. Ağır tərkiblər (darçın,
-zoğal, hil) dibə, yüngül ləçəklər üstə düşür — hər parçanın `depth` dəyəri var,
-`rankPile()` isə onları sıralayıb yığının hündürlüyünə bərabər paylayır ki, 100 q
-həmişə eyni səviyyəyə qalxsın, tərkibi nə olursa olsun. Masada yığının əksi var,
-bankanın içində toz zərrələri üzür, «Yenidən tök» qapağı qaldırıb yarpaqları
-içəri yağdırır.
+**Quru** — qapaq bağlı, yığın dibdə. Bütün məntiq
+[pile.ts](src/canvas-app/canvas/pile.ts)-dədir və iki xassə üzərində qurulub.
+
+*Səviyyə çəkidən yox, həcmdən gəlir.* Hər tərkibin `bulk` dəyəri var (ml/qram):
+bütöv nanə yarpağı əsasən havadır, mixək sıxdır. 100 q həmişə 100 qramdır, amma
+tutduğu həcm tərkibə görə dəyişir — ona görə yığın 68% (sıx qarışıq) ilə 94%
+(yarpaqlı) arasında hərəkət edir, orta qarışıq ~83%.
+
+*Yerləşdirmə deterministikdir və tərkibdən asılı deyil.* Hər parçanın yeri yalnız
+`hash(tərkib#nömrə)`-dən çıxır. Nəticə: səhifə yenilənəndə qarışıq eyni görünür,
+və tərkib əlavə/silinəndə qalan parçalardan **heç biri yerini dəyişmir** — yalnız
+səviyyə ilə birlikdə qalxır və ya çökür, yəni dəyişiklik «çoxalma/azalma» kimi
+oxunur, qarışdırma kimi yox. Silinən tərkib olduğu yerdə söhbətsiz sönür.
+
+Yayılma R3 aşağı-diskrepanslı ardıcıllıqla verilir: bir tərkibin parçaları
+bankanın hər yerinə səpələnir, fərqli tərkiblər fərqli offsetdən başladığı üçün
+lay yaratmadan qarışır. Hər tərkibə ən azı 8 parça, onlardan 3-ü məcburi ön
+şüşəyə yaxın — az qramlı tərkib də tapıla bilir. Parçaların arxasında tünd bir
+kütlə çəkilir; onsuz boşluqlar boş bankanın arxasını göstərir və dolu banka
+seyrək səpələnmə kimi görünür.
+
+Tərkibin üstünə gələndə onun parçaları parıldayır, qalanları sönükləşir.
+«Yenidən tök» qapağı qaldırıb yarpaqları içəri yağdırır.
 
 **Dəmlənmiş** — qapaq qalxıb yanda masaya qoyulur, yuxarıdan qaynar su tökülür,
 yarpaqlar suda qalxıb yavaş konveksiya ilə fırlanır, rəng tədricən dərinləşir
@@ -96,6 +112,7 @@ src/shared/           səhifə və serverin paylaşdığı hissə
 
 src/canvas-app/
   canvas/jar.ts       banka profili + şüşə, taxta qapaq, etiket, masa
+  canvas/pile.ts      quru yığın: həcm→səviyyə, deterministik yerləşdirmə, kütlə
   canvas/brew.ts      dəmlənmiş çay: maye, səth, tər, tökülən su
   canvas/paint.ts     ortaq çəkmə köməkçiləri (qradiyent keşi, rəng, profil)
   canvas/scene.ts     fon: işıq şüaları, toz, vinyet (yarım ölçülü buferdə)
