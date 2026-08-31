@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# nothing to index behind these
+Disallow: /admin
+Disallow: /api/
+Disallow: /sebet
+Disallow: /odenis
+Disallow: /hazir

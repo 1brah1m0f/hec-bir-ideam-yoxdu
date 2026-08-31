@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="az">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Öz çayın — sifarişlər</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0d0906;
+        --panel: #16100a;
+        --line: rgba(239, 228, 210, 0.1);
+        --cream: #efe4d2;
+        --brass: #c79a4b;
+        --muted: rgba(239, 228, 210, 0.42);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--cream);
+        font: 14px/1.5 "Inter", "Segoe UI", system-ui, sans-serif;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 22px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(13, 9, 6, 0.94);
+        backdrop-filter: blur(10px);
+      }
+      h1 { margin: 0; font-size: 16px; font-weight: 500; letter-spacing: 0.01em; }
+      .count { color: var(--muted); font-size: 12px; }
+      .spacer { flex: 1; }
+      select, button {
+        font: inherit;
+        color: var(--cream);
+        background: rgba(239, 228, 210, 0.04);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+      button:hover, select:hover { border-color: rgba(199, 154, 75, 0.55); }
+      main { padding: 20px 22px 60px; }
+      .empty { color: var(--muted); padding: 60px 0; text-align: center; }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: var(--panel);
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 150px 1fr 130px 120px 150px;
+        gap: 14px;
+        align-items: center;
+        padding: 13px 16px;
+      }
+      @media (max-width: 900px) {
+        .row { grid-template-columns: 1fr 1fr; }
+      }
+      .nomre { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--brass); font-size: 13px; }
+      .when { color: var(--muted); font-size: 11.5px; }
+      .who b { font-weight: 500; }
+      .who span { color: var(--muted); }
+      .total { font-size: 16px; text-align: right; font-variant-numeric: tabular-nums; }
+      .pill {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 99px;
+        font-size: 11px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .pill[data-s="yeni"] { color: #f0c374; border-color: rgba(240, 195, 116, 0.4); }
+      .pill[data-s="göndərilib"] { color: #8fbf85; border-color: rgba(143, 191, 133, 0.35); }
+      .pill[data-s="ləğv"] { color: #c47a6f; border-color: rgba(196, 122, 111, 0.35); }
+      details > summary { cursor: pointer; padding: 0 16px 12px; color: var(--muted); font-size: 12px; }
+      .lines { padding: 0 16px 16px; }
+      .line {
+        border-top: 1px dashed var(--line);
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .terkib { color: var(--muted); font-size: 12px; margin-top: 3px; }
+      .addr { color: var(--muted); font-size: 12.5px; padding: 0 16px 14px; }
+      .addr b { color: var(--cream); font-weight: 400; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Öz çayın · sifarişlər</h1>
+      <span class="count" id="count"></span>
+      <span class="spacer"></span>
+      <select id="filter"><option value="">hamısı</option></select>
+      <button id="refresh">Yenilə</button>
+    </header>
+    <main id="list"><p class="empty">Yüklənir…</p></main>
+
+    <script>
+      const list = document.getElementById('list')
+      const filter = document.getElementById('filter')
+      const countEl = document.getElementById('count')
+      let statuses = []
+
+      const money = (n) => n.toFixed(2).replace('.', ',') + ' ₼'
+      const when = (iso) =>
+        new Date(iso).toLocaleString('az-AZ', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      const esc = (s) =>
+        String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+
+      async function load() {
+        const q = filter.value ? `?status=${encodeURIComponent(filter.value)}` : ''
+        const res = await fetch('/api/admin/orders' + q)
+        if (!res.ok) {
+          list.innerHTML = '<p class="empty">Yüklənmədi (' + res.status + ')</p>'
+          return
+        }
+        const data = await res.json()
+        countEl.textContent = data.cem + ' sifariş'
+
+        if (statuses.length === 0) {
+          statuses = data.statuslar
+          for (const s of statuses) {
+            const o = document.createElement('option')
+            o.value = o.textContent = s
+            filter.append(o)
+          }
+        }
+
+        if (data.sifarisler.length === 0) {
+          list.innerHTML = '<p class="empty">Sifariş yoxdur.</p>'
+          return
+        }
+
+        list.innerHTML = data.sifarisler
+          .map(
+            (o) => `
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="nomre">${esc(o.nomre)}</div>
+                <div class="when">${when(o.yaradilib)}</div>
+              </div>
+              <div class="who">
+                <b>${esc(o.ad)}</b> · <a href="tel:${esc(o.telefon)}" style="color:var(--brass)">${esc(o.telefon)}</a>
+                <div><span>${esc(o.seher)} · ${o.odenis === 'kart' ? 'kartla' : 'nağd'}</span></div>
+              </div>
+              <div><span class="pill" data-s="${esc(o.status)}">${esc(o.status)}</span></div>
+              <div class="total">${money(o.yekun)}</div>
+              <div>
+                <select data-id="${o.id}" class="status">
+                  ${statuses.map((s) => `<option value="${s}"${s === o.status ? ' selected' : ''}>${s}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div class="addr"><b>Ünvan:</b> ${esc(o.unvan)}${o.qeyd ? ' · <b>Qeyd:</b> ' + esc(o.qeyd) : ''}</div>
+            <details>
+              <summary>${o.setirler.length} qarışıq · məhsullar ${money(o.cem)} · çatdırılma ${o.catdirilma === 0 ? 'pulsuz' : money(o.catdirilma)}</summary>
+              <div class="lines">
+                ${o.setirler
+                  .map(
+                    (l) => `
+                  <div class="line">
+                    <div>
+                      <div>${esc(l.ad)} × ${l.say}</div>
+                      <div class="terkib">${l.terkib.map((t) => esc(t.id) + ' ' + t.qram + 'q').join(' · ')}</div>
+                    </div>
+                    <div>${money(l.vahidQiymet * l.say)}</div>
+                  </div>`,
+                  )
+                  .join('')}
+              </div>
+            </details>
+          </div>`,
+          )
+          .join('')
+
+        for (const sel of list.querySelectorAll('select.status')) {
+          sel.addEventListener('change', async (e) => {
+            const id = e.target.dataset.id
+            await fetch('/api/admin/orders/' + id, {
+              method: 'PATCH',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ status: e.target.value }),
+            })
+            load()
+          })
+        }
+      }
+
+      document.getElementById('refresh').addEventListener('click', load)
+      filter.addEventListener('change', load)
+      load()
+      setInterval(load, 30000)
+    </script>
+  </body>
+</html>

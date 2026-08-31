@@ -1,0 +1,14 @@
+node_modules
+dist
+server/data
+.git
+.gitignore
+.env
+*.tsbuildinfo
+*.md
+.claude
+DEPLOY.md
+
+# Vercel-ə məxsus, konteynerə lazım deyil
+api
+vercel.json
