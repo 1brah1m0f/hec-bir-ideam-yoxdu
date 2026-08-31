@@ -3,6 +3,14 @@ export default {
   content: ['./*.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        /**
+         * Side-by-side layouts need width *and* a landscape-ish shape. A 740x360
+         * phone on its side is wide enough to split but too short to stack; a
+         * 768x1024 tablet is the opposite. Width alone gets one of them wrong.
+         */
+        wide: { raw: '(min-width: 700px) and (min-aspect-ratio: 1/1)' },
+      },
       colors: {
         stall: {
           950: '#120c08',

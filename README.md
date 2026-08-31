@@ -54,10 +54,13 @@ Hər ikisi eyni bankadır, eyni tərkiblə.
 **Quru** — qapaq bağlı, yığın dibdə. Bütün məntiq
 [pile.ts](src/canvas-app/canvas/pile.ts)-dədir və iki xassə üzərində qurulub.
 
-*Səviyyə çəkidən yox, həcmdən gəlir.* Hər tərkibin `bulk` dəyəri var (ml/qram):
-bütöv nanə yarpağı əsasən havadır, mixək sıxdır. 100 q həmişə 100 qramdır, amma
-tutduğu həcm tərkibə görə dəyişir — ona görə yığın 68% (sıx qarışıq) ilə 94%
-(yarpaqlı) arasında hərəkət edir, orta qarışıq ~83%.
+*Səviyyə iki şeydən gəlir.* Birincisi həcm: hər tərkibin `bulk` dəyəri var
+(ml/qram) — bütöv nanə yarpağı əsasən havadır, mixək sıxdır. İkincisi tərkib
+sayı: banka boş başlayır və hər yeni tərkiblə dolur (1 tərkib ~33%, 3 tərkib
+~72%, 5+ tərkib ~80%). Ciddi desək bağlama həmişə 100 qramdır, yəni bir tərkibli
+qarışıq da altı tərkibli qədər yer tutmalıdır; amma heç nə seçməmişdən dolu
+görünən qarışdırıcı «düzəldirəm» hissi vermir, ona görə səviyyə qəsdən
+rəngarəngliyə də bağlıdır.
 
 *Yerləşdirmə deterministikdir və tərkibdən asılı deyil.* Hər parçanın yeri yalnız
 `hash(tərkib#nömrə)`-dən çıxır. Nəticə: səhifə yenilənəndə qarışıq eyni görünür,
@@ -73,7 +76,9 @@ kütlə çəkilir; onsuz boşluqlar boş bankanın arxasını göstərir və dol
 seyrək səpələnmə kimi görünür.
 
 Tərkibin üstünə gələndə onun parçaları parıldayır, qalanları sönükləşir.
-«Yenidən tök» qapağı qaldırıb yarpaqları içəri yağdırır.
+«Yenidən tök» qapağı qaldırıb yarpaqları içəri yağdırır. Quru bankada **buxar
+yoxdur** — yalnız düşən parçanın qaldırdığı quru toz; yığından qalxan buğ onu
+yaş göstərirdi.
 
 **Dəmlənmiş** — qapaq qalxıb yanda masaya qoyulur, yuxarıdan qaynar su tökülür,
 yarpaqlar suda qalxıb yavaş konveksiya ilə fırlanır, rəng tədricən dərinləşir
@@ -179,6 +184,17 @@ Panel sifarişləri, tərkibləri və qiymətləri göstərir; statusu dəyişm�
 tam bir baza çayı; təkrarlanan tərkib yox; say 1–99; ən çox 20 sətir. Qramlar və
 qiymətlər serverdə yenidən hesablanır. Bir IP saatda `RATE_LIMIT` (susmaya görə
 12) sifarişdən çox göndərə bilməz.
+
+## Responsivlik
+
+Tailwind-ə `wide` adlı əlavə breakpoint var:
+`(min-width: 700px) and (min-aspect-ratio: 1/1)`. Qarışdırıcının iki sütuna
+bölünməsi buna baxır, təkcə genişliyə yox — 740×360 telefon yan çevriləndə
+bölünməlidir, 768×1024 planşet isə üst-üstə qalmalıdır. Təkcə genişliyə baxsan
+birini mütləq səhv edirsən.
+
+Yoxlanmış ölçülər: 320×568, 360×740, 414×896, 740×360 (yan), 768×1024,
+1024×768, 1280×800, 1920×1080 — dörd səhifədə horizontal overflow yoxdur.
 
 ## Qeydlər
 

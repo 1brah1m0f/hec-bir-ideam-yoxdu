@@ -19,8 +19,22 @@ import { BLACK, mix, rgba, WHITE } from './paint'
 
 /** Height 100 g of a reference-density blend reaches, as a fraction of the jar. */
 const FULL_FILL = 0.82
-const MIN_FILL = 0.1
+const MIN_FILL = 0.08
 const MAX_FILL = 0.94
+
+/**
+ * How full the jar looks for a blend of one thing, and how fast that closes on
+ * a full jar as more is added. Strictly the package is always 100 g, so a jar
+ * holding one ingredient holds exactly as much as a jar holding six — but a
+ * blender that is already full before you have chosen anything gives no sense of
+ * building something, so the level is deliberately scaled by variety too.
+ */
+const ONE_INGREDIENT = 0.42
+const VARIETY_DECAY = 0.55
+
+function variety(n: number): number {
+  return n <= 0 ? 0 : 1 - (1 - ONE_INGREDIENT) * VARIETY_DECAY ** (n - 1)
+}
 
 /** Fewest pieces of an ingredient that must be visible, however little there is. */
 export const MIN_GRAINS = 8
@@ -48,7 +62,8 @@ export function blendVolume(items: WeighedItem[]): number {
 export function fillLevel(items: WeighedItem[]): number {
   if (items.length === 0) return 0
   const k = blendVolume(items) / (TOTAL_GRAMS * REFERENCE_BULK)
-  return Math.min(MAX_FILL, Math.max(MIN_FILL, FULL_FILL * Math.sqrt(k)))
+  const h = FULL_FILL * Math.sqrt(k) * variety(items.length)
+  return Math.min(MAX_FILL, Math.max(MIN_FILL, h))
 }
 
 // ------------------------------------------------------------------ randomness

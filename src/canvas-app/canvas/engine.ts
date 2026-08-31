@@ -1,5 +1,5 @@
 import { BY_ID } from '../../shared/data/ingredients'
-import type { ShapeKind, WeighedItem } from '../../shared/types'
+import type { ShapeKind, WeighedItem, WeightClass } from '../../shared/types'
 import {
   brewClip,
   BREW_T,
@@ -59,6 +59,19 @@ const SHOWER = 0.34
  * relative to its height, so everything scales down to keep leaves leaf-sized.
  */
 const PIECE_SCALE = 0.46
+/**
+ * Steeping leaves read better large and few than small and many — the dry heap
+ * wants the opposite. One particle set serves both, so the brewed pass scales up.
+ */
+const BREW_PIECE = 1.32
+
+/** Where each weight class hangs in the tea: heavy low, petals near the surface. */
+const BREW_BAND: Record<WeightClass, [number, number]> = {
+  heavy: [0.02, 0.46],
+  mid: [0.14, 0.8],
+  light: [0.4, 1.0],
+}
+const BREW_DRIFT: Record<WeightClass, number> = { heavy: 0.3, mid: 0.7, light: 1 }
 
 const SHAPE_SCALE: Record<ShapeKind, number> = {
   'tea-black': 0.1,
@@ -107,6 +120,7 @@ interface P {
   key: string
   ing: string
   shape: ShapeKind
+  cls: WeightClass
   variant: number
   tier: number
   /** 0 crisp and forward, 1 deep — sets alpha and the blur tier */
@@ -246,6 +260,7 @@ export class TeaEngine {
   private glow!: HTMLCanvasElement
   private shadow!: HTMLCanvasElement
   private wisp!: HTMLCanvasElement
+  private dust!: HTMLCanvasElement
   /** table, shadow and the jar's back wall — static, so rasterised per resize */
   private back = document.createElement('canvas')
   private front = document.createElement('canvas')
@@ -282,6 +297,8 @@ export class TeaEngine {
     this.glow = makeBlob(256, 'rgba(226,168,96,0.9)', 'rgba(180,110,50,0.28)')
     this.shadow = makeBlob(256, 'rgba(0,0,0,0.85)', 'rgba(0,0,0,0.35)')
     this.wisp = makeBlob(128, 'rgba(255,244,224,0.8)', 'rgba(238,206,160,0.26)')
+    // dry dust, not vapour: browner, and it never gets bright
+    this.dust = makeBlob(96, 'rgba(196,158,108,0.55)', 'rgba(150,116,74,0.22)')
   }
 
   resize() {
@@ -528,11 +545,13 @@ export class TeaEngine {
   private make(g: Grain): P {
     const meta = BY_ID[g.ing]
     const shape = meta?.shape ?? 'tea-black'
+    const cls = meta?.weightClass ?? 'mid'
     const size = this.geom.maxHalf * SHAPE_SCALE[shape] * PIECE_SCALE * g.scale
     return {
       key: g.key,
       ing: g.ing,
       shape,
+      cls,
       variant: g.variant,
       tier: g.depth > 0.5 ? 1 : 0,
       depth: g.depth,
@@ -562,7 +581,8 @@ export class TeaEngine {
     const g = this.geom
 
     if (this.brew > 0.1) {
-      const t = surfaceT(this.brew) * (0.06 + p.v * 0.86)
+      const band = BREW_BAND[p.cls]
+      const t = surfaceT(this.brew) * (band[0] + (band[1] - band[0]) * p.v)
       const y = yAt(g, t)
       p.tx = g.cx + p.u * Math.max(1, innerHalfAtY(g, y, p.size * 0.6)) * 0.85
       p.ty = y
@@ -757,12 +777,12 @@ export class TeaEngine {
         const v = (g.bottom - p.y) / g.bodyH
         const fx = Math.cos(u * 2 + a) * Math.sin(v * 2.7 - a * 0.7)
         const fy = -Math.sin(u * 2 + a) * Math.cos(v * 2.7 - a * 0.7)
-        const drift = g.maxHalf * (0.14 + this.slosh * 0.5) * (0.4 + p.v * 0.8)
+        const drift = g.maxHalf * (0.14 + this.slosh * 0.5) * BREW_DRIFT[p.cls]
         p.vx *= Math.exp(-3 * dt)
         p.vy *= Math.exp(-3 * dt)
         p.x = approach(p.x, p.tx + fx * drift, 0.55, dt) + p.vx * dt
         p.y = approach(p.y, p.ty + fy * drift * 0.55, 0.55, dt) + p.vy * dt
-        p.rot += dt * 0.4 * Math.sin(this.time * 0.7 + p.v * 9)
+        p.rot += dt * 0.4 * Math.sin(this.time * 0.7 + p.v * 9) * (p.cls === 'light' ? 1.6 : 0.6)
         const room = Math.max(1, innerHalfAtY(g, p.y, p.size * 0.6))
         p.x = Math.max(g.cx - room, Math.min(g.cx + room, p.x))
         alive.push(p)
@@ -779,11 +799,12 @@ export class TeaEngine {
   }
 
   private stepPuffs(dt: number) {
+    // only hot tea steams. A dry jar gets nothing but the dust a landing piece
+    // knocks up, which is spawned where it lands — vapour rising out of a sealed
+    // jar of dry leaves was the single thing that made it look wet.
     const hot = this.brew > 0.15
-    // steam off hot tea, or the dust a dry jar lets out while the lid is up
-    const rate = hot ? 16 : this.lid > 0.3 ? 9 : 0
-    if (rate && !this.reducedMotion && this.puffs.length < this.maxPuffs) {
-      if (Math.random() < dt * rate) this.puffs.push(hot ? this.makeSteam() : this.makeAroma())
+    if (hot && !this.reducedMotion && this.puffs.length < this.maxPuffs) {
+      if (Math.random() < dt * 16) this.puffs.push(this.makeSteam())
     }
     this.puffs = this.puffs.filter((s) => {
       s.age += dt
@@ -812,25 +833,11 @@ export class TeaEngine {
     return {
       x,
       y,
-      r: size * (1.4 + Math.random()),
+      r: size * (1.1 + Math.random() * 0.7),
       age: 0,
-      life: 0.55 + Math.random() * 0.4,
-      vy: -this.geom.bodyH * (0.03 + Math.random() * 0.05),
+      life: 0.4 + Math.random() * 0.3,
+      vy: -this.geom.bodyH * (0.015 + Math.random() * 0.03),
       vx: (Math.random() - 0.5) * this.geom.maxHalf * 0.5,
-      phase: Math.random() * 7,
-    }
-  }
-
-  private makeAroma(): Puff {
-    const g = this.geom
-    return {
-      x: g.cx + (Math.random() - 0.5) * g.neckHalf * 1.4,
-      y: g.top - g.bodyH * 0.02,
-      r: g.maxHalf * (0.1 + Math.random() * 0.14),
-      age: 0,
-      life: 1.6 + Math.random() * 1.2,
-      vy: -g.bodyH * (0.18 + Math.random() * 0.14),
-      vx: (Math.random() - 0.5) * g.maxHalf * 0.3,
       phase: Math.random() * 7,
     }
   }
@@ -968,8 +975,8 @@ export class TeaEngine {
    * simply less alpha; a highlighted ingredient keeps its own and takes the
    * light away from everything else.
    */
-  private grainAlpha(p: P) {
-    let a = p.alpha * (1 - p.depth * 0.42)
+  private grainAlpha(p: P, depth = true) {
+    let a = p.alpha * (depth ? 1 - p.depth * 0.42 : 1)
     if (this.highlightK > 0.01) {
       const mine = p.ing === this.highlight
       a *= mine ? 1 : 1 - 0.78 * this.highlightK
@@ -1031,7 +1038,7 @@ export class TeaEngine {
 
     for (const p of this.particles) {
       const depth = clamp01((p.y - surfaceY) / Math.max(1, g.bottom - surfaceY))
-      this.blitParticle(p, this.grainAlpha(p) * (0.9 - depth * 0.4))
+      this.blitParticle(p, this.grainAlpha(p, false) * (0.9 - depth * 0.4), BREW_PIECE)
     }
 
     this.renderMurk(liquid, surfaceY)
@@ -1042,7 +1049,7 @@ export class TeaEngine {
 
     // anything still above the water line, dropping in
     for (const p of this.particles) {
-      if (p.y < surfaceY - p.size * 0.5) this.blitParticle(p, this.grainAlpha(p))
+      if (p.y < surfaceY - p.size * 0.5) this.blitParticle(p, this.grainAlpha(p, false), BREW_PIECE)
     }
 
     drawBrewKink(ctx, g, liquid, this.brew)
@@ -1084,11 +1091,11 @@ export class TeaEngine {
     return sprite
   }
 
-  private blitParticle(p: P, alpha: number) {
+  private blitParticle(p: P, alpha: number, boost = 1) {
     if (alpha <= 0.004) return
     const { ctx } = this
     const sprite = this.spriteFor(p)
-    const side = sprite.side * (p.size / sprite.size) * p.shrink
+    const side = sprite.side * (p.size / sprite.size) * p.shrink * boost
     ctx.save()
     ctx.globalAlpha = clamp01(alpha)
     ctx.translate(p.x, p.y)
@@ -1124,15 +1131,16 @@ export class TeaEngine {
     if (!this.puffs.length || this.reducedMotion) return
     const { ctx } = this
     const hot = this.brew > 0.15
+    const sprite = hot ? this.wisp : this.dust
     ctx.save()
     ctx.globalCompositeOperation = 'lighter'
     for (const s of this.puffs) {
       const k = s.age / s.life
-      const a = (hot ? 0.2 : 0.16) * Math.min(1, k / 0.15) * (1 - k) ** 1.4
+      const a = (hot ? 0.2 : 0.09) * Math.min(1, k / 0.15) * (1 - k) ** 1.4
       if (a <= 0.005) continue
       ctx.globalAlpha = a
       const wob = 1 + Math.sin(this.time * 1.3 + s.phase) * 0.14
-      ctx.drawImage(this.wisp, s.x - s.r * wob, s.y - s.r, s.r * 2 * wob, s.r * 2)
+      ctx.drawImage(sprite, s.x - s.r * wob, s.y - s.r, s.r * 2 * wob, s.r * 2)
     }
     ctx.restore()
   }

@@ -62,29 +62,35 @@ export function Mix({
 
   return (
     <div className="flex h-[100svh] flex-col overflow-hidden pt-[57px]">
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col wide:flex-row">
         {/* --- the glass half ------------------------------------------------ */}
-        <div className="relative h-[34svh] shrink-0 lg:h-auto lg:min-w-0 lg:flex-1">
-          <div ref={anchor} aria-hidden="true" className="pointer-events-none absolute inset-0" />
+        <div className="relative h-[38svh] shrink-0 wide:h-auto wide:min-w-0 wide:flex-1">
+          {/* the toggle sits over the jar; on narrow screens the anchor starts
+              below it so the lid is never covered */}
+          <div
+            ref={anchor}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 top-10 wide:inset-0"
+          />
 
-          <div className="absolute left-1/2 top-4 -translate-x-1/2 lg:left-6 lg:top-6 lg:translate-x-0">
+          <div className="absolute left-1/2 top-2 -translate-x-1/2 wide:left-5 wide:top-5 wide:translate-x-0">
             <ModeToggle value={mode} onChange={onMode} />
           </div>
 
           <p
             aria-live="polite"
-            className="pointer-events-none absolute inset-x-6 bottom-5 hidden text-center font-serif text-[15.5px] font-light italic leading-relaxed text-cream/60 lg:block"
+            className="pointer-events-none absolute inset-x-6 bottom-5 hidden text-center font-serif text-[15.5px] font-light italic leading-relaxed text-cream/60 wide:block"
           >
             {line}
           </p>
         </div>
 
         {/* --- the controls half --------------------------------------------- */}
-        <div className="flex min-h-0 flex-1 flex-col border-t border-cream/[0.08] bg-[#0c0805]/78 backdrop-blur-xl lg:w-[46%] lg:max-w-[600px] lg:flex-none lg:border-l lg:border-t-0">
+        <div className="flex min-h-0 flex-1 flex-col border-t border-cream/[0.08] bg-[#0c0805]/78 backdrop-blur-xl wide:w-[46%] wide:max-w-[600px] wide:flex-none wide:border-l wide:border-t-0">
           <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
             <p
               aria-live="polite"
-              className="mb-6 border-y border-cream/[0.08] py-3 text-center font-serif text-[14.5px] font-light italic leading-relaxed text-cream/60 lg:hidden"
+              className="mb-6 border-y border-cream/[0.08] py-3 text-center font-serif text-[14.5px] font-light italic leading-relaxed text-cream/60 wide:hidden"
             >
               {line}
             </p>
@@ -137,10 +143,10 @@ export function Mix({
 
           {/* --- the bar that never scrolls away ----------------------------- */}
           <div className="shrink-0 border-t border-cream/[0.09] bg-[#0c0805]/92 px-6 py-3.5 sm:px-8">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="font-sans text-[10.5px] tracking-[0.18em] text-cream/35">
-                  100 QRAM · TƏRKİB + {manat(PACKAGING_FEE)}
+            <div className="flex items-center justify-between gap-3 sm:gap-4">
+              <div className="min-w-0">
+                <div className="truncate font-sans text-[9.5px] tracking-[0.14em] text-cream/35 sm:text-[10.5px] sm:tracking-[0.18em]">
+                  100 QRAM · QABLAŞDIRMA {manat(PACKAGING_FEE)}
                 </div>
                 <div className="font-serif text-[1.75rem] font-light leading-tight text-brass-400 tabular-nums">
                   <Counter value={price} decimals={2} />
@@ -187,7 +193,7 @@ function ModeToggle({ value, onChange }: { value: Mode; onChange: (m: Mode) => v
           onClick={() => onChange(id)}
           aria-pressed={value === id}
           className={[
-            'rounded-full px-4 py-1.5 font-sans text-[12px] transition-all duration-500 [transition-timing-function:var(--ease)]',
+            'whitespace-nowrap rounded-full px-3 py-1 font-sans text-[11px] transition-all duration-500 [transition-timing-function:var(--ease)] sm:px-4 sm:py-1.5 sm:text-[12px]',
             value === id
               ? 'bg-brass-500/90 text-stall-950'
               : 'text-cream/55 hover:text-cream',
