@@ -38,12 +38,16 @@ export function IngredientPicker({ selected, onToggle }: Props) {
                   aria-pressed={active}
                   title={ing.note}
                   className={[
-                    'group relative flex flex-col items-center gap-1 overflow-hidden rounded-[3px] border px-2 py-3 text-center transition-all duration-500 [transition-timing-function:var(--ease)] hover:-translate-y-0.5',
+                    'group relative flex flex-col items-center gap-1 overflow-hidden rounded-[3px] border px-2 py-3 text-center transition-all duration-500 [transition-timing-function:var(--ease)] hover:-translate-y-0.5 active:scale-[0.97]',
                     active
                       ? 'border-brass-500/65 bg-brass-500/[0.11] text-cream shadow-[0_14px_34px_-24px_rgba(199,154,75,0.95)]'
                       : 'border-cream/[0.09] bg-cream/[0.02] text-cream/70 hover:border-cream/25 hover:bg-cream/[0.05]',
                   ].join(' ')}
                 >
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cream/[0.08] to-transparent transition-transform duration-700 [transition-timing-function:var(--ease)] group-hover:translate-x-full"
+                  />
                   <IngredientGlyph
                     shape={ing.shape}
                     size={36}

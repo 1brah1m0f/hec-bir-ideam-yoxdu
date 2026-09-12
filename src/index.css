@@ -475,6 +475,21 @@
   }
 }
 
+/* one ring expanding out of the cart button when something lands in it */
+@keyframes ping-once {
+  from {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+.animate-ping-once {
+  animation: ping-once 0.64s var(--ease-soft) both;
+}
+
 /* the little checkmark inside the toast, traced rather than popped in */
 .draw-check {
   stroke-dasharray: 13;

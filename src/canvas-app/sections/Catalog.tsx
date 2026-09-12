@@ -52,12 +52,17 @@ export function Catalog({ selected, onPick, onStart }: Props) {
                         onClick={() => onPick(ing.id)}
                         aria-pressed={active}
                         className={[
-                          'group relative flex h-full w-full items-start gap-4 overflow-hidden rounded-[3px] border p-4 text-left transition-all duration-[650ms] [transition-timing-function:var(--ease)] hover:-translate-y-1',
+                          'group relative flex h-full w-full items-start gap-4 overflow-hidden rounded-[3px] border p-4 text-left transition-all duration-[650ms] [transition-timing-function:var(--ease)] hover:-translate-y-1 active:scale-[0.98] active:duration-150',
                           active
                             ? 'border-brass-500/60 bg-brass-500/[0.09] shadow-[0_18px_44px_-28px_rgba(199,154,75,0.9)]'
                             : 'border-cream/[0.09] bg-[#120c08]/70 backdrop-blur-md hover:border-cream/25 hover:bg-[#1a120c]/80',
                         ].join(' ')}
                       >
+                        {/* a soft light sweeping across the card, the same gesture as the gold buttons */}
+                        <span
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cream/[0.06] to-transparent transition-transform duration-[900ms] [transition-timing-function:var(--ease)] group-hover:translate-x-full"
+                        />
                         <span className="relative mt-0.5 shrink-0">
                           <IngredientGlyph
                             shape={ing.shape}

@@ -1,4 +1,5 @@
 import { Hero } from '../sections/Hero'
+import { Marquee } from '../sections/Marquee'
 import { Story } from '../sections/Story'
 import { Catalog } from '../sections/Catalog'
 import { Footer } from '../sections/Footer'
@@ -16,6 +17,7 @@ export function Landing({ selected, onChoose, onPick, onStart }: Props) {
     <>
       <main>
         <Hero onChoose={onChoose} onStart={onStart} />
+        <Marquee />
         <Story />
         <Catalog selected={selected} onPick={onPick} onStart={onStart} />
       </main>

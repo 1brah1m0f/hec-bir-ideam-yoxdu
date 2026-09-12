@@ -70,10 +70,10 @@ export function Story() {
                 delay={i * 130}
                 className="group relative bg-[#100b07]/85 p-7 backdrop-blur-md transition-colors duration-700 [transition-timing-function:var(--ease)] hover:bg-[#181009]/90 sm:p-9"
               >
-                <span className="font-sans text-[11px] tracking-[0.3em] text-brass-500/60">
+                <span className="font-sans text-[11px] tracking-[0.3em] text-brass-500/60 transition-all duration-700 [transition-timing-function:var(--ease)] group-hover:tracking-[0.42em] group-hover:text-brass-400">
                   {s.n}
                 </span>
-                <h3 className="mt-4 font-serif text-[1.6rem] font-light leading-tight text-cream">
+                <h3 className="mt-4 font-serif text-[1.6rem] font-light leading-tight text-cream transition-transform duration-700 [transition-timing-function:var(--ease)] group-hover:translate-x-1">
                   {s.title}
                 </h3>
                 <p className="mt-3 font-sans text-[13.5px] leading-relaxed text-cream/45">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, ROUTES } from '../lib/router'
 
 const LANDING_NAV = [
@@ -15,6 +15,7 @@ interface Props {
 export function Header({ cartCount, route }: Props) {
   const [solid, setSolid] = useState(false)
   const [bump, setBump] = useState(false)
+  const progressRef = useRef<HTMLDivElement>(null)
   const onLanding = route === ROUTES.landing
 
   useEffect(() => {
@@ -23,7 +24,15 @@ export function Header({ cartCount, route }: Props) {
       setSolid(true)
       return
     }
-    const onScroll = () => setSolid(window.scrollY > 40)
+    // the progress hairline is written straight to the DOM rather than through
+    // state — a value that changes on every scroll tick would otherwise
+    // re-render the whole header dozens of times a second
+    const onScroll = () => {
+      setSolid(window.scrollY > 40)
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const pct = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${pct})`
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -33,7 +42,7 @@ export function Header({ cartCount, route }: Props) {
   useEffect(() => {
     if (cartCount === 0) return
     setBump(true)
-    const t = window.setTimeout(() => setBump(false), 520)
+    const t = window.setTimeout(() => setBump(false), 640)
     return () => window.clearTimeout(t)
   }, [cartCount])
 
@@ -70,9 +79,13 @@ export function Header({ cartCount, route }: Props) {
               <a
                 key={n.href}
                 href={n.href}
-                className="font-sans text-[12.5px] text-cream/50 transition-colors duration-300 hover:text-cream"
+                className="group relative py-1 font-sans text-[12.5px] text-cream/50 transition-colors duration-300 hover:text-cream"
               >
                 {n.label}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-brass-500/70 transition-transform duration-[420ms] [transition-timing-function:var(--ease)] group-hover:scale-x-100"
+                />
               </a>
             ))
           ) : (
@@ -101,9 +114,15 @@ export function Header({ cartCount, route }: Props) {
               cartCount > 0
                 ? 'border-brass-500/55 bg-brass-500/[0.1] text-brass-400 hover:bg-brass-500/[0.18]'
                 : 'border-cream/12 text-cream/55 hover:border-cream/25 hover:text-cream',
-              bump ? 'scale-[1.06]' : 'scale-100',
+              bump ? 'scale-[1.08]' : 'scale-100',
             ].join(' ')}
           >
+            {bump && (
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 -z-10 animate-ping-once rounded-[3px] bg-brass-500/40"
+              />
+            )}
             <svg width="14" height="15" viewBox="0 0 14 15" fill="none" aria-hidden="true">
               <path
                 d="M1 4h12l-1 10H2L1 4zM4.5 4V2.6a2.5 2.5 0 0 1 5 0V4"
@@ -117,6 +136,16 @@ export function Header({ cartCount, route }: Props) {
           </Link>
         </div>
       </div>
+
+      {/* how far down the landing page the reader has come — silent otherwise */}
+      {onLanding && (
+        <div aria-hidden="true" className="h-px w-full bg-cream/[0.06]">
+          <div
+            ref={progressRef}
+            className="h-full w-full origin-left bg-gradient-to-r from-brass-500/70 to-brass-400 [transform:scaleX(0)]"
+          />
+        </div>
+      )}
     </header>
   )
 }

@@ -30,7 +30,13 @@ export function Hero({ onChoose, onStart }: Props) {
       <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-6 pb-14 pt-[46svh] sm:px-10 lg:justify-center lg:pb-16 lg:pt-28">
         <div className="max-w-[36rem]">
           <Reveal kind="fade">
-            <span className="eyebrow">Bakı · fərdi çay qarışığı</span>
+            <span className="eyebrow inline-flex items-center gap-2">
+              <span aria-hidden="true" className="relative flex h-1.5 w-1.5">
+                <span className="animate-glow absolute inset-0 rounded-full bg-brass-400" />
+                <span className="absolute inset-0 rounded-full bg-brass-400" />
+              </span>
+              Bakı · fərdi çay qarışığı
+            </span>
           </Reveal>
 
           <Lines
