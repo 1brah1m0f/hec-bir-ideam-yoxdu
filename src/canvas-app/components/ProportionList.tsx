@@ -1,4 +1,4 @@
-import { BY_ID, isBase, TOTAL_GRAMS } from '../../shared/data/ingredients'
+import { BY_ID, isBase } from '../../shared/data/ingredients'
 import { LEVEL_LABEL } from '../../shared/lib/blend'
 import { rgb } from '../../shared/lib/blend'
 import type { Level, WeighedItem } from '../../shared/types'
@@ -10,11 +10,13 @@ const LEVELS: Level[] = ['az', 'orta', 'cox']
 
 interface Props {
   items: WeighedItem[]
+  /** package size in grams the items sum to */
+  total: number
   onLevel: (id: string, level: Level) => void
   onRemove: (id: string) => void
 }
 
-export function ProportionList({ items, onLevel, onRemove }: Props) {
+export function ProportionList({ items, total, onLevel, onRemove }: Props) {
   const { highlight } = useGlass()
   useEffect(() => () => highlight(null), [highlight])
 
@@ -39,7 +41,7 @@ export function ProportionList({ items, onLevel, onRemove }: Props) {
               key={it.ingredientId}
               title={`${ing?.name} · ${it.grams} q`}
               style={{
-                width: `${(it.grams / TOTAL_GRAMS) * 100}%`,
+                width: `${(it.grams / total) * 100}%`,
                 backgroundColor: ing ? rgb(ing.color) : undefined,
               }}
               className="h-full transition-[width] duration-700 [transition-timing-function:var(--ease)]"
@@ -131,7 +133,7 @@ export function ProportionList({ items, onLevel, onRemove }: Props) {
 
       <div className="mt-3 flex items-baseline justify-between border-t border-brass-500/25 pt-3">
         <span className="font-sans text-[11px] tracking-[0.2em] text-cream/45">CƏMİ</span>
-        <span className="font-serif text-lg font-light text-brass-400">{TOTAL_GRAMS} q</span>
+        <span className="font-serif text-lg font-light text-brass-400">{total} q</span>
       </div>
     </div>
   )

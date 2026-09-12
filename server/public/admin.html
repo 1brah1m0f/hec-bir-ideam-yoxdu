@@ -178,7 +178,7 @@
                     (l) => `
                   <div class="line">
                     <div>
-                      <div>${esc(l.ad)} × ${l.say}</div>
+                      <div>${esc(l.ad)} · ${l.qram ?? 100} q × ${l.say}</div>
                       <div class="terkib">${l.terkib.map((t) => esc(t.id) + ' ' + t.qram + 'q').join(' · ')}</div>
                     </div>
                     <div>${money(l.vahidQiymet * l.say)}</div>

@@ -8,19 +8,20 @@ export const UNITS: Record<Level, number> = { az: 1, orta: 2, cox: 3 }
 export const LEVEL_LABEL: Record<Level, string> = { az: 'az', orta: 'orta', cox: 'çox' }
 
 /**
- * Remainder from rounding always lands on the base tea so the sum is exactly 100 g.
+ * Splits one package of `total` grams across the recipe by its az/orta/çox units.
+ * Remainder from rounding always lands on the base tea so the sum is exact.
  * If the base would be pushed below 1 g the surplus spills onto the next largest row.
  */
-export function weigh(items: BlendItem[]): WeighedItem[] {
+export function weigh(items: BlendItem[], total: number = TOTAL_GRAMS): WeighedItem[] {
   if (items.length === 0) return []
 
   const totalUnits = items.reduce((sum, it) => sum + UNITS[it.level], 0)
   const weighed: WeighedItem[] = items.map((it) => ({
     ...it,
-    grams: Math.round((UNITS[it.level] / totalUnits) * TOTAL_GRAMS),
+    grams: Math.round((UNITS[it.level] / totalUnits) * total),
   }))
 
-  let remainder = TOTAL_GRAMS - weighed.reduce((sum, it) => sum + it.grams, 0)
+  let remainder = total - weighed.reduce((sum, it) => sum + it.grams, 0)
   if (remainder === 0) return weighed
 
   const order = [

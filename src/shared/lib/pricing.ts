@@ -1,4 +1,11 @@
-import { BY_ID, DELIVERY, PACKAGING_FEE, TOTAL_GRAMS, BAKU_CITIES } from '../data/ingredients'
+import {
+  BY_ID,
+  DEFAULT_SIZE,
+  DELIVERY,
+  packagingFee,
+  TOTAL_GRAMS,
+  BAKU_CITIES,
+} from '../data/ingredients'
 import type { CartLine, WeighedItem } from '../types'
 
 /** Round to the nearest 10 qəpik — shelf prices here never carry single qəpik. */
@@ -6,7 +13,10 @@ export function roundPrice(n: number): number {
   return Math.round(n * 10) / 10
 }
 
-/** What the 100 g of leaf itself costs, before packaging. */
+/**
+ * What the leaf itself costs, before packaging. Catalogue prices are per 100 g,
+ * so a 250 g pouch of the same recipe is simply two and a half times the leaf.
+ */
 export function ingredientCost(items: WeighedItem[]): number {
   let sum = 0
   for (const it of items) {
@@ -16,10 +26,13 @@ export function ingredientCost(items: WeighedItem[]): number {
   return sum
 }
 
-/** Price of one 100 g package of this blend, packaging and blending included. */
-export function blendPrice(items: WeighedItem[]): number {
+/**
+ * Price of one package of this blend, packaging and blending included. `items`
+ * must already be weighed out for a package of `size` grams.
+ */
+export function blendPrice(items: WeighedItem[], size: number = DEFAULT_SIZE): number {
   if (items.length === 0) return 0
-  return roundPrice(ingredientCost(items) + PACKAGING_FEE)
+  return roundPrice(ingredientCost(items) + packagingFee(size))
 }
 
 export function isBaku(city: string): boolean {
@@ -61,4 +74,4 @@ export function manat(n: number, withUnit = true): string {
   return withUnit ? `${s} ₼` : s
 }
 
-export { DELIVERY, PACKAGING_FEE }
+export { DELIVERY, packagingFee }

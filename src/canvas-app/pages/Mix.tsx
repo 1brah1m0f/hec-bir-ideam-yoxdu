@@ -3,8 +3,10 @@ import { useGlassAnchor } from '../components/GlassStage'
 import { IngredientPicker } from '../components/IngredientPicker'
 import { ProportionList } from '../components/ProportionList'
 import { PackageLabel } from '../components/PackageLabel'
+import { Segmented } from '../components/Segmented'
 import { Counter } from '../components/Reveal'
-import { manat, PACKAGING_FEE } from '../../shared/lib/pricing'
+import { manat, packagingFee } from '../../shared/lib/pricing'
+import { PACKAGE_SIZES } from '../../shared/data/ingredients'
 import type { Level, WeighedItem } from '../../shared/types'
 import type { Mode } from '../canvas/engine'
 
@@ -13,11 +15,15 @@ interface Props {
   selected: Set<string>
   line: string
   price: number
+  /** price of this same recipe in each pouch size, keyed by grams */
+  sizePrices: Record<number, number>
   hasBase: boolean
   name: string
   color: [number, number, number]
   mode: Mode
+  size: number
   onMode: (m: Mode) => void
+  onSize: (g: number) => void
   onName: (v: string) => void
   onToggle: (id: string) => void
   onLevel: (id: string, level: Level) => void
@@ -37,11 +43,14 @@ export function Mix({
   selected,
   line,
   price,
+  sizePrices,
   hasBase,
   name,
   color,
   mode,
+  size,
   onMode,
+  onSize,
   onName,
   onToggle,
   onLevel,
@@ -74,14 +83,25 @@ export function Mix({
           />
 
           <div className="absolute left-1/2 top-2 -translate-x-1/2 wide:left-5 wide:top-5 wide:translate-x-0">
-            <ModeToggle value={mode} onChange={onMode} />
+            <Segmented
+              value={mode}
+              onChange={onMode}
+              ariaLabel="Görünüş"
+              size="sm"
+              options={[
+                { id: 'dry', label: 'Quru qarışıq' },
+                { id: 'brewed', label: 'Dəmlənmiş' },
+              ]}
+            />
           </div>
 
           <p
             aria-live="polite"
             className="pointer-events-none absolute inset-x-6 bottom-5 hidden text-center font-serif text-[15.5px] font-light italic leading-relaxed text-cream/60 wide:block"
           >
-            {line}
+            <span key={line} className="animate-line inline-block">
+              {line}
+            </span>
           </p>
         </div>
 
@@ -92,7 +112,9 @@ export function Mix({
               aria-live="polite"
               className="mb-6 border-y border-cream/[0.08] py-3 text-center font-serif text-[14.5px] font-light italic leading-relaxed text-cream/60 wide:hidden"
             >
-              {line}
+              <span key={line} className="animate-line inline-block">
+                {line}
+              </span>
             </p>
 
             <div className="mb-6 flex flex-wrap items-center gap-2">
@@ -113,11 +135,29 @@ export function Mix({
               <IngredientPicker selected={selected} onToggle={onToggle} />
             </Step>
 
-            <Step n="2" title="Nisbət" hint="Yüz qram öz-özünə bölünür">
-              <ProportionList items={items} onLevel={onLevel} onRemove={onRemove} />
+            <Step n="2" title="Nisbət" hint={`${size} qram öz-özünə bölünür`}>
+              <ProportionList items={items} total={size} onLevel={onLevel} onRemove={onRemove} />
             </Step>
 
-            <Step n="3" title="Ad" hint="Etiketdə bu yazılacaq">
+            <Step n="3" title="Bağlama" hint={`Qablaşdırma ${manat(packagingFee(size))}`}>
+              <Segmented
+                value={size}
+                onChange={onSize}
+                ariaLabel="Bağlama ölçüsü"
+                className="w-full"
+                options={PACKAGE_SIZES.map((g) => ({
+                  id: g,
+                  label: `${g} q`,
+                  hint: items.length ? manat(sizePrices[g] ?? 0) : undefined,
+                }))}
+              />
+              <p className="mt-2.5 font-sans text-[11.5px] leading-relaxed text-cream/30">
+                Nisbət eyni qalır, yalnız çəki dəyişir. Böyük bağlamada qram başına qablaşdırma
+                daha ucuz düşür.
+              </p>
+            </Step>
+
+            <Step n="4" title="Ad" hint="Etiketdə bu yazılacaq">
               <input
                 id="blend-name"
                 value={name}
@@ -131,7 +171,7 @@ export function Mix({
                 {name.length}/28
               </div>
               <div className="mt-6">
-                <PackageLabel name={name} items={items} price={price} color={color} />
+                <PackageLabel name={name} items={items} price={price} size={size} color={color} />
               </div>
             </Step>
 
@@ -146,7 +186,7 @@ export function Mix({
             <div className="flex items-center justify-between gap-3 sm:gap-4">
               <div className="min-w-0">
                 <div className="truncate font-sans text-[9.5px] tracking-[0.14em] text-cream/35 sm:text-[10.5px] sm:tracking-[0.18em]">
-                  100 QRAM · QABLAŞDIRMA {manat(PACKAGING_FEE)}
+                  {size} QRAM · QABLAŞDIRMA {manat(packagingFee(size))}
                 </div>
                 <div className="font-serif text-[1.75rem] font-light leading-tight text-brass-400 tabular-nums">
                   <Counter value={price} decimals={2} />
@@ -174,38 +214,6 @@ export function Mix({
   )
 }
 
-/** Dry blend in the closed jar, or the same blend brewed with the lid off. */
-function ModeToggle({ value, onChange }: { value: Mode; onChange: (m: Mode) => void }) {
-  const options: [Mode, string][] = [
-    ['dry', 'Quru qarışıq'],
-    ['brewed', 'Dəmlənmiş'],
-  ]
-  return (
-    <div
-      role="group"
-      aria-label="Görünüş"
-      className="flex overflow-hidden rounded-full border border-cream/12 bg-[#0d0906]/70 p-0.5 backdrop-blur-md"
-    >
-      {options.map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onChange(id)}
-          aria-pressed={value === id}
-          className={[
-            'whitespace-nowrap rounded-full px-3 py-1 font-sans text-[11px] transition-all duration-500 [transition-timing-function:var(--ease)] sm:px-4 sm:py-1.5 sm:text-[12px]',
-            value === id
-              ? 'bg-brass-500/90 text-stall-950'
-              : 'text-cream/55 hover:text-cream',
-          ].join(' ')}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 function Step({
   n,
   title,
@@ -222,7 +230,7 @@ function Step({
       <div className="mb-3.5 flex items-baseline gap-3">
         <span className="font-sans text-[11px] tracking-[0.24em] text-brass-500/60">{n}</span>
         <h2 className="font-serif text-[1.2rem] font-light text-cream">{title}</h2>
-        <span className="ml-auto font-sans text-[11px] text-cream/25">{hint}</span>
+        <span className="ml-auto text-right font-sans text-[11px] text-cream/25">{hint}</span>
       </div>
       {children}
     </section>

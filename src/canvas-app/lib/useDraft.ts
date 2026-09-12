@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BY_ID } from '../../shared/data/ingredients'
+import { BY_ID, DEFAULT_SIZE, isPackageSize } from '../../shared/data/ingredients'
 import type { BlendItem } from '../../shared/types'
 import type { Mode } from '../canvas/engine'
 
@@ -10,10 +10,12 @@ interface Draft {
   items: BlendItem[]
   name: string
   mode: Mode
+  /** package size in grams */
+  size: number
 }
 
 function load(): Draft {
-  const empty: Draft = { items: [], name: '', mode: 'dry' }
+  const empty: Draft = { items: [], name: '', mode: 'dry', size: DEFAULT_SIZE }
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return empty
@@ -31,6 +33,7 @@ function load(): Draft {
       ),
       name: typeof parsed.name === 'string' ? parsed.name.slice(0, 28) : '',
       mode: parsed.mode === 'brewed' ? 'brewed' : 'dry',
+      size: isPackageSize(parsed.size) ? parsed.size : DEFAULT_SIZE,
     }
   } catch {
     return empty
@@ -42,6 +45,7 @@ export function useDraft() {
   const [items, setItems] = useState<BlendItem[]>([])
   const [name, setName] = useState('')
   const [mode, setMode] = useState<Mode>('dry')
+  const [size, setSize] = useState<number>(DEFAULT_SIZE)
   const hydrated = useRef(false)
 
   useEffect(() => {
@@ -49,17 +53,18 @@ export function useDraft() {
     setItems(draft.items)
     setName(draft.name)
     setMode(draft.mode)
+    setSize(draft.size)
     hydrated.current = true
   }, [])
 
   useEffect(() => {
     if (!hydrated.current) return
     try {
-      localStorage.setItem(KEY, JSON.stringify({ items, name, mode }))
+      localStorage.setItem(KEY, JSON.stringify({ items, name, mode, size }))
     } catch {
       /* private mode — the draft just does not survive a reload */
     }
-  }, [items, name, mode])
+  }, [items, name, mode, size])
 
-  return { items, setItems, name, setName, mode, setMode }
+  return { items, setItems, name, setName, mode, setMode, size, setSize }
 }

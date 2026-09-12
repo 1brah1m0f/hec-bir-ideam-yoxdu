@@ -12,11 +12,13 @@ export function PackageLabel({
   name,
   items,
   price,
+  size,
   color,
 }: {
   name: string
   items: WeighedItem[]
   price: number
+  size: number
   color: [number, number, number]
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -85,7 +87,7 @@ export function PackageLabel({
             </h3>
             <div className="mx-auto mt-2.5 h-px w-9 bg-brass-500/45" />
             <div className="mt-2.5 font-serif text-[13px] font-light italic text-cream/45">
-              100 qram · {manat(price)}
+              {size} qram · {manat(price)}
             </div>
           </div>
 

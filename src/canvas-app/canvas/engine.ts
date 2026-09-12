@@ -220,6 +220,7 @@ export class TeaEngine {
   /** how full the jar reads for lighting purposes, 0..1 */
   private fill = 0
   private label = ''
+  private labelSize = 100
 
   private highlight: string | null = null
   private highlightK = 0
@@ -421,9 +422,10 @@ export class TeaEngine {
     this.pointerTo.y = Math.max(-1, Math.min(1, ny))
   }
 
-  /** The name printed on the jar's label. */
-  setLabel(name: string) {
+  /** The name and package size printed on the jar's label. */
+  setLabel(name: string, size: number) {
     this.label = name
+    this.labelSize = size
   }
 
   /** Lights one ingredient's pieces and dims the rest. Null clears it. */
@@ -924,7 +926,7 @@ export class TeaEngine {
 
     this.renderMotes()
     this.blit(this.front, g.frontBounds)
-    drawLabel(ctx, g, this.label, tint)
+    drawLabel(ctx, g, this.label, this.labelSize, tint)
     drawSheen(ctx, g, this.sheen)
     this.renderPuffs()
     drawLid(ctx, g, this.lid, this.lidSet)

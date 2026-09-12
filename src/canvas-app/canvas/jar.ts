@@ -625,6 +625,7 @@ export function drawLabel(
   ctx: CanvasRenderingContext2D,
   g: Geom,
   name: string,
+  pack: number,
   color: [number, number, number],
 ) {
   const text = name.trim() || 'Fərdi qarışıq'
@@ -671,7 +672,7 @@ export function drawLabel(
 
   ctx.font = `500 ${h * 0.15}px "Inter", system-ui, sans-serif`
   ctx.fillStyle = 'rgba(74,50,28,0.62)'
-  ctx.fillText('100 q · ÖZ ÇAYIN', g.cx, cy + h * 0.26)
+  ctx.fillText(`${pack} q · ÖZ ÇAYIN`, g.cx, cy + h * 0.26)
 
   // a highlight raking across the paper, from the same key light as the glass
   ctx.globalCompositeOperation = 'lighter'

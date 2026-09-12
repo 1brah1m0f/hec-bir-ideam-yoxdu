@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { GlassStage, useGlass } from './components/GlassStage'
 import { Header } from './components/Header'
+import { Toast, type ToastMessage } from './components/Toast'
 import { Landing } from './pages/Landing'
 import { Mix } from './pages/Mix'
 import { Cart } from './pages/Cart'
@@ -10,7 +11,7 @@ import { useCart } from './lib/useCart'
 import { useDraft } from './lib/useDraft'
 import type { Mode } from './canvas/engine'
 import { navigate, ROUTES, useRoute } from './lib/router'
-import { isBase } from '../shared/data/ingredients'
+import { isBase, PACKAGE_SIZES } from '../shared/data/ingredients'
 import { addIngredient, blendColor, removeIngredient, setLevel, weigh } from '../shared/lib/blend'
 import { comment } from '../shared/lib/commentary'
 import { blendPrice } from '../shared/lib/pricing'
@@ -20,11 +21,17 @@ import type { BlendItem, Customer, EntryChoice, Level, OrderResponse } from '../
 export default function CanvasApp() {
   const draft = useDraft()
 
-  const weighed = useMemo(() => weigh(draft.items), [draft.items])
+  const weighed = useMemo(() => weigh(draft.items, draft.size), [draft.items, draft.size])
   const color = useMemo(() => blendColor(weighed), [weighed])
 
   return (
-    <GlassStage items={weighed} color={color} name={draft.name} mode={draft.mode}>
+    <GlassStage
+      items={weighed}
+      color={color}
+      name={draft.name}
+      size={draft.size}
+      mode={draft.mode}
+    >
       <Shop {...draft} />
     </GlassStage>
   )
@@ -41,6 +48,8 @@ function Shop({
   setName,
   mode,
   setMode,
+  size,
+  setSize,
 }: {
   items: BlendItem[]
   setItems: React.Dispatch<React.SetStateAction<BlendItem[]>>
@@ -48,16 +57,24 @@ function Shop({
   setName: React.Dispatch<React.SetStateAction<string>>
   mode: Mode
   setMode: React.Dispatch<React.SetStateAction<Mode>>
+  size: number
+  setSize: React.Dispatch<React.SetStateAction<number>>
 }) {
   const { pour } = useGlass()
   const route = useRoute()
   const [receipt, setReceipt] = useState<Receipt | null>(null)
+  const [toast, setToast] = useState<ToastMessage | null>(null)
   const cart = useCart()
 
-  const weighed = useMemo(() => weigh(items), [items])
+  const weighed = useMemo(() => weigh(items, size), [items, size])
   const color = useMemo(() => blendColor(weighed), [weighed])
   const line = useMemo(() => comment(weighed), [weighed])
-  const price = useMemo(() => blendPrice(weighed), [weighed])
+  const price = useMemo(() => blendPrice(weighed, size), [weighed, size])
+  /** what the same recipe costs in every pouch size — shown on the size cards */
+  const sizePrices = useMemo(
+    () => Object.fromEntries(PACKAGE_SIZES.map((s) => [s, blendPrice(weigh(items, s), s)])),
+    [items],
+  )
   const selected = useMemo(() => new Set(items.map((i) => i.ingredientId)), [items])
   const hasBase = items.some((i) => isBase(i.ingredientId))
 
@@ -78,6 +95,7 @@ function Shop({
   }, [pour])
 
   const goMix = useCallback(() => navigate(ROUTES.mix), [])
+  const clearToast = useCallback(() => setToast(null), [])
 
   function chooseEntry(id: EntryChoice) {
     setItems(PRESETS[id].map((i) => ({ ...i })))
@@ -108,7 +126,13 @@ function Shop({
   }
 
   function addToCart() {
-    cart.add(name.trim() || 'Adsız qarışıq', weighed, price)
+    const title = name.trim() || 'Adsız qarışıq'
+    cart.add(title, weighed, price, size)
+    setToast({
+      id: Date.now(),
+      title: `«${title}» səbətdədir`,
+      body: `${size} q · ${weighed.length} tərkib`,
+    })
   }
 
   function orderDone(order: OrderResponse, customer: Customer) {
@@ -130,11 +154,14 @@ function Shop({
             selected={selected}
             line={line}
             price={price}
+            sizePrices={sizePrices}
             hasBase={hasBase}
             name={name}
             color={color}
             mode={mode}
+            size={size}
             onMode={setMode}
+            onSize={setSize}
             onName={setName}
             onToggle={toggle}
             onLevel={(id, lvl: Level) => setItems((p) => setLevel(p, id, lvl))}
@@ -158,6 +185,8 @@ function Shop({
           />
         )}
       </div>
+
+      <Toast message={toast} onDone={clearToast} />
     </>
   )
 }

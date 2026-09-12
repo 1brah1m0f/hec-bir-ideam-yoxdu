@@ -20,6 +20,9 @@ export const catalog = JSON.parse(raw)
 export const BY_ID = new Map(catalog.ingredients.map((i) => [i.id, i]))
 export const LEVELS = new Set(['az', 'orta', 'cox'])
 export const UNITS = { az: 1, orta: 2, cox: 3 }
+/** package sizes a blend can be ordered in, grams */
+export const PACKAGE_SIZES = catalog.packageSizes
+export const DEFAULT_SIZE = PACKAGE_SIZES[0]
 
 export function roundPrice(n) {
   return Math.round(n * 10) / 10
@@ -29,15 +32,19 @@ export function isBase(id) {
   return BY_ID.get(id)?.category === 'baza'
 }
 
-/** Grams the server would assign to this recipe, independent of what was sent. */
-export function weigh(terkib) {
+export function packagingFee(size) {
+  return catalog.packaging[String(size)] ?? catalog.packaging[String(DEFAULT_SIZE)]
+}
+
+/** Grams the server would assign to this recipe for one package of `total` grams. */
+export function weigh(terkib, total = DEFAULT_SIZE) {
   const totalUnits = terkib.reduce((s, t) => s + UNITS[t.level], 0)
   const out = terkib.map((t) => ({
     ...t,
-    qram: Math.round((UNITS[t.level] / totalUnits) * catalog.totalGrams),
+    qram: Math.round((UNITS[t.level] / totalUnits) * total),
   }))
 
-  let remainder = catalog.totalGrams - out.reduce((s, t) => s + t.qram, 0)
+  let remainder = total - out.reduce((s, t) => s + t.qram, 0)
   if (remainder === 0) return out
 
   const order = [
@@ -53,14 +60,15 @@ export function weigh(terkib) {
   return out
 }
 
-export function blendPrice(weighed) {
+/** Catalogue prices are per 100 g; `weighed` already sums to the package size. */
+export function blendPrice(weighed, size = DEFAULT_SIZE) {
   if (weighed.length === 0) return 0
   let sum = 0
   for (const t of weighed) {
     const ing = BY_ID.get(t.id)
     if (ing) sum += (t.qram / catalog.totalGrams) * ing.price
   }
-  return roundPrice(sum + catalog.packagingFee)
+  return roundPrice(sum + packagingFee(size))
 }
 
 export function isBakuCity(city) {

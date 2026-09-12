@@ -61,9 +61,12 @@ export interface CartLine {
   /** stable local id, not a server id */
   id: string
   name: string
+  /** the recipe, weighed out for one package of `grams` */
   items: WeighedItem[]
   qty: number
-  /** manat, one 100 g package */
+  /** package size in grams — one of PACKAGE_SIZES */
+  grams: number
+  /** manat, one package of `grams` */
   unitPrice: number
 }
 

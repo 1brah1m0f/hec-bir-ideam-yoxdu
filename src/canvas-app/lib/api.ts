@@ -11,6 +11,8 @@ export interface OrderPayload {
   setirler: {
     ad: string
     say: number
+    /** package size in grams */
+    qram: number
     gosterilenQiymet: number
     terkib: { id: string; level: string; qram: number }[]
   }[]
@@ -22,6 +24,7 @@ export function buildPayload(customer: Customer, lines: CartLine[]): OrderPayloa
     setirler: lines.map((l) => ({
       ad: l.name,
       say: l.qty,
+      qram: l.grams,
       gosterilenQiymet: l.unitPrice,
       terkib: l.items.map((i) => ({
         id: i.ingredientId,

@@ -76,7 +76,7 @@ export function Cart({ lines, onQty, onRemove }: Props) {
                           .join(' · ')}
                       </p>
                       <p className="mt-1.5 font-sans text-[11.5px] text-cream/28">
-                        100 q bağlama · {manat(l.unitPrice)}
+                        {l.grams} q bağlama · {manat(l.unitPrice)}
                       </p>
                     </div>
 

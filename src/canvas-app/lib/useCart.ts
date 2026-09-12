@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { DEFAULT_SIZE, isPackageSize } from '../../shared/data/ingredients'
 import type { CartLine, WeighedItem } from '../../shared/types'
 
 const KEY = 'oz-cayin.cart.v1'
@@ -9,15 +10,18 @@ function load(): CartLine[] {
     if (!raw) return []
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return []
-    // a stale schema is not worth migrating for a shopping cart
-    return parsed.filter(
-      (l): l is CartLine =>
-        l &&
-        typeof l.id === 'string' &&
-        Array.isArray(l.items) &&
-        typeof l.qty === 'number' &&
-        typeof l.unitPrice === 'number',
-    )
+    // a stale schema is not worth migrating for a shopping cart; a line saved
+    // before package sizes existed was always the smallest pouch
+    return parsed
+      .filter(
+        (l: Partial<CartLine>) =>
+          l &&
+          typeof l.id === 'string' &&
+          Array.isArray(l.items) &&
+          typeof l.qty === 'number' &&
+          typeof l.unitPrice === 'number',
+      )
+      .map((l: CartLine) => ({ ...l, grams: isPackageSize(l.grams) ? l.grams : DEFAULT_SIZE }))
   } catch {
     return []
   }
@@ -41,18 +45,18 @@ export function useCart() {
     }
   }, [lines])
 
-  const add = useCallback((name: string, items: WeighedItem[], unitPrice: number) => {
+  const add = useCallback((name: string, items: WeighedItem[], unitPrice: number, grams: number) => {
     const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
     setLines((prev) => {
       // the same recipe under the same name is a quantity bump, not a new line
-      const key = signature(items)
-      const at = prev.findIndex((l) => l.name === name && signature(l.items) === key)
+      const key = signature(items, grams)
+      const at = prev.findIndex((l) => l.name === name && signature(l.items, l.grams) === key)
       if (at >= 0) {
         const next = [...prev]
         next[at] = { ...next[at], qty: Math.min(99, next[at].qty + 1) }
         return next
       }
-      return [...prev, { id, name, items, qty: 1, unitPrice }]
+      return [...prev, { id, name, items, qty: 1, grams, unitPrice }]
     })
     return id
   }, [])
@@ -76,9 +80,12 @@ export function useCart() {
   return { lines, add, setQty, remove, clear, count }
 }
 
-function signature(items: WeighedItem[]): string {
-  return items
-    .map((i) => `${i.ingredientId}:${i.level}`)
-    .sort()
-    .join('|')
+function signature(items: WeighedItem[], grams: number): string {
+  return (
+    `${grams}g|` +
+    items
+      .map((i) => `${i.ingredientId}:${i.level}`)
+      .sort()
+      .join('|')
+  )
 }

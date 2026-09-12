@@ -16,7 +16,9 @@ import compression from 'compression'
 import express from 'express'
 import {
   BY_ID,
+  DEFAULT_SIZE,
   LEVELS,
+  PACKAGE_SIZES,
   blendPrice,
   catalog,
   deliveryFee,
@@ -146,6 +148,13 @@ function parseOrder(body) {
     if (!Number.isInteger(say) || say < 1 || say > 99)
       throw { xeta: `${where}: say 1 ilə 99 arasında olmalıdır.` }
 
+    // the package size; an old client that never sent one gets the smallest
+    const qram = row?.qram === undefined ? DEFAULT_SIZE : Number(row.qram)
+    if (!PACKAGE_SIZES.includes(qram))
+      throw {
+        xeta: `${where}: bağlama ölçüsü ${PACKAGE_SIZES.join(", ")} qramdan biri olmalıdır.`,
+      }
+
     const terkib = row?.terkib
     if (!Array.isArray(terkib) || terkib.length === 0)
       throw { xeta: `${where}: tərkib boşdur.` }
@@ -168,8 +177,8 @@ function parseOrder(body) {
 
     // grams and price are recomputed here; whatever the page sent is only
     // compared against, never trusted
-    const weighed = weigh(parsed)
-    const vahidQiymet = blendPrice(weighed)
+    const weighed = weigh(parsed, qram)
+    const vahidQiymet = blendPrice(weighed, qram)
     const shown = Number(row?.gosterilenQiymet)
     if (Number.isFinite(shown) && Math.abs(shown - vahidQiymet) > 0.051) {
       throw {
@@ -181,6 +190,7 @@ function parseOrder(body) {
     return {
       ad: cleanText(row?.ad, 40) || 'Adsız qarışıq',
       say,
+      qram,
       vahidQiymet,
       terkib: weighed,
     }

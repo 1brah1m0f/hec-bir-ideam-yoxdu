@@ -273,6 +273,84 @@
   .field-error {
     border-color: rgba(196, 122, 79, 0.75);
   }
+
+  /* ------------------------------------------------------------ segmented control */
+  /* a row of options with one pill that slides behind whichever is active,
+     rather than each button flipping its own colours independently */
+  .seg {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: 2px;
+    border-radius: 999px;
+    border: 1px solid rgba(239, 228, 210, 0.12);
+    background: rgba(13, 9, 6, 0.7);
+    padding: 3px;
+    backdrop-filter: blur(10px);
+  }
+  .seg-square {
+    border-radius: 4px;
+  }
+  .seg-square .seg-pill {
+    border-radius: 2px;
+  }
+  .seg-pill {
+    position: absolute;
+    inset: 3px auto 3px 3px;
+    width: calc((100% - 6px - (var(--n) - 1) * 2px) / var(--n));
+    border-radius: 999px;
+    background: linear-gradient(135deg, #e2bd76 0%, #c79a4b 46%, #a97d38 100%);
+    box-shadow: 0 6px 16px -6px rgba(199, 154, 75, 0.75);
+    transform: translateX(calc(var(--at) * (100% + 2px)));
+    transition: transform 0.5s var(--ease);
+    will-change: transform;
+  }
+  .seg-btn {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 0.6rem 0.5rem;
+    border-radius: inherit;
+    font-family: theme('fontFamily.sans');
+    font-size: 12.5px;
+    color: rgba(239, 228, 210, 0.58);
+    transition: color 0.4s var(--ease);
+  }
+  .seg-btn:hover {
+    color: rgba(239, 228, 210, 0.85);
+  }
+  .seg-btn.is-on {
+    color: #170f08;
+    font-weight: 500;
+  }
+  .seg-hint {
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+  }
+  .seg-sm .seg-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 11px;
+  }
+  .seg-sm {
+    padding: 2px;
+  }
+  .seg-sm .seg-pill {
+    inset: 2px auto 2px 2px;
+    width: calc((100% - 4px - (var(--n) - 1) * 2px) / var(--n));
+  }
+
+  /* -------------------------------------------------------------------- toast */
+  .toast {
+    animation: toast-in 0.55s var(--ease) both;
+  }
+  .toast.is-leaving {
+    animation: toast-out 0.4s var(--ease) both;
+  }
 }
 
 @layer utilities {
@@ -356,6 +434,57 @@
 }
 .animate-glow {
   animation: glow-pulse 3.4s ease-in-out infinite;
+}
+
+/* the commentary line under the jar, replaced in place as the recipe changes */
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 5px, 0);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.animate-line {
+  animation: line-in 0.5s var(--ease) both;
+}
+
+/* the cart toast sliding up from below the fold and settling back down */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.98);
+  }
+}
+
+/* the little checkmark inside the toast, traced rather than popped in */
+.draw-check {
+  stroke-dasharray: 13;
+  stroke-dashoffset: 13;
+  animation: check-draw 0.4s var(--ease) 0.15s forwards;
+}
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

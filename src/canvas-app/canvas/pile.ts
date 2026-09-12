@@ -1,4 +1,4 @@
-import { BY_ID, REFERENCE_BULK, TOTAL_GRAMS } from '../../shared/data/ingredients'
+import { BY_ID, DEFAULT_SIZE, REFERENCE_BULK } from '../../shared/data/ingredients'
 import type { WeighedItem } from '../../shared/types'
 import { innerHalfAtY, type Geom } from './jar'
 import { BLACK, mix, rgba, WHITE } from './paint'
@@ -19,6 +19,13 @@ import { BLACK, mix, rgba, WHITE } from './paint'
 
 /** Height 100 g of a reference-density blend reaches, as a fraction of the jar. */
 const FULL_FILL = 0.82
+/**
+ * A bigger pouch shows as a fuller jar, but not in proportion — five times the
+ * leaf cannot be five times the height, so the size is compressed hard. At the
+ * default 100 g size this factor is exactly 1, so nothing about the jar's
+ * usual look changes; it only lifts the level for a 250 g or 500 g pouch.
+ */
+const SIZE_POWER = 0.24
 const MIN_FILL = 0.08
 const MAX_FILL = 0.94
 
@@ -61,8 +68,11 @@ export function blendVolume(items: WeighedItem[]): number {
  */
 export function fillLevel(items: WeighedItem[]): number {
   if (items.length === 0) return 0
-  const k = blendVolume(items) / (TOTAL_GRAMS * REFERENCE_BULK)
-  const h = FULL_FILL * Math.sqrt(k) * variety(items.length)
+  const grams = items.reduce((s, it) => s + it.grams, 0) || DEFAULT_SIZE
+  // density relative to the reference blend, independent of the package size
+  const k = blendVolume(items) / (grams * REFERENCE_BULK)
+  const size = (grams / DEFAULT_SIZE) ** SIZE_POWER
+  const h = FULL_FILL * Math.sqrt(k) * variety(items.length) * size
   return Math.min(MAX_FILL, Math.max(MIN_FILL, h))
 }
 

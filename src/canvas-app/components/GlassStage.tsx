@@ -57,12 +57,14 @@ interface Props {
   color: [number, number, number]
   /** printed on the jar's paper label */
   name: string
+  /** package size in grams, also on the label */
+  size: number
   /** dry blend in a closed jar, or the same blend brewed with the lid off */
   mode: Mode
   children: ReactNode
 }
 
-export function GlassStage({ items, color, name, mode, children }: Props) {
+export function GlassStage({ items, color, name, size, mode, children }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const engineRef = useRef<TeaEngine | null>(null)
   const anchors = useRef(new Map<string, Registration>())
@@ -156,8 +158,8 @@ export function GlassStage({ items, color, name, mode, children }: Props) {
   }, [items, color])
 
   useEffect(() => {
-    engineRef.current?.setLabel(name)
-  }, [name])
+    engineRef.current?.setLabel(name, size)
+  }, [name, size])
 
   useEffect(() => {
     engineRef.current?.setMode(mode)

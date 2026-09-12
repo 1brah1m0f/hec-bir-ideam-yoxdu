@@ -30,6 +30,7 @@ const SCHEMA = `
     order_id      INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     ad            TEXT    NOT NULL,
     say           INTEGER NOT NULL,
+    qram          INTEGER NOT NULL DEFAULT 100,
     vahid_qiymet  REAL    NOT NULL,
     terkib        TEXT    NOT NULL
   );
@@ -39,12 +40,30 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_lines_order ON order_lines(order_id);
 `
 
+/**
+ * Columns added after the first release. CREATE TABLE IF NOT EXISTS leaves an
+ * existing table alone, so each one is tried as an ALTER, and the "duplicate
+ * column" it raises on a database that already has it is the expected outcome.
+ */
+const ADDED_COLUMNS = [["order_lines", "qram", "INTEGER NOT NULL DEFAULT 100"]]
+
+async function migrate(d) {
+  await d.script(SCHEMA)
+  for (const [table, column, type] of ADDED_COLUMNS) {
+    try {
+      await d.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
+    } catch (err) {
+      if (!/duplicate column/i.test(String(err?.message ?? err))) throw err
+    }
+  }
+}
+
 let migrated
 
 /** The driver, with the schema applied once per process. */
 async function conn() {
   const d = await getDriver()
-  migrated ??= d.script(SCHEMA)
+  migrated ??= migrate(d)
   await migrated
   return d
 }
@@ -85,9 +104,9 @@ export async function createOrder(order, lines) {
       ],
     ],
     ...lines.map((l) => [
-      `INSERT INTO order_lines (order_id, ad, say, vahid_qiymet, terkib)
-       VALUES ((SELECT id FROM orders WHERE nomre = ?), ?, ?, ?, ?)`,
-      [order.nomre, l.ad, l.say, l.vahidQiymet, JSON.stringify(l.terkib)],
+      `INSERT INTO order_lines (order_id, ad, say, qram, vahid_qiymet, terkib)
+       VALUES ((SELECT id FROM orders WHERE nomre = ?), ?, ?, ?, ?, ?)`,
+      [order.nomre, l.ad, l.say, l.qram, l.vahidQiymet, JSON.stringify(l.terkib)],
     ]),
   ])
 }
@@ -115,6 +134,7 @@ export async function listOrders({ limit = 50, offset = 0, status = null } = {})
     byOrder.get(l.order_id)?.push({
       ad: l.ad,
       say: l.say,
+      qram: l.qram ?? 100,
       vahidQiymet: l.vahid_qiymet,
       terkib: JSON.parse(l.terkib),
     })

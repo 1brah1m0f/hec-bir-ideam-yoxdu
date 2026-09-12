@@ -1,7 +1,16 @@
 {
   "currency": "AZN",
   "totalGrams": 100,
-  "packagingFee": 2.5,
+  "packageSizes": [
+    100,
+    250,
+    500
+  ],
+  "packaging": {
+    "100": 2.5,
+    "250": 3.5,
+    "500": 5
+  },
   "delivery": {
     "baku": 3,
     "regions": 5,
