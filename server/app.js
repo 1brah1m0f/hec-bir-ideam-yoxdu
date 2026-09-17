@@ -188,7 +188,7 @@ function parseOrder(body) {
     }
 
     return {
-      ad: cleanText(row?.ad, 40) || 'Adsız qarışıq',
+      ad: cleanText(row?.ad, 40) || 'Mənim qarışığım',
       say,
       qram,
       vahidQiymet,

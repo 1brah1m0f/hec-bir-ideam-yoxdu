@@ -50,7 +50,7 @@
         "səhər üçün",
         "soyuq havalar üçün"
       ],
-      "note": "Lənkəran plantasiyalarından tam fermentasiya — dolğun, tünd, klassik.",
+      "note": "Dolğun, tünd və klassik baza. Gündəlik Azərbaycan çay dadına yaxındır.",
       "bulk": 3.4
     },
     {
@@ -70,7 +70,7 @@
         "səhər üçün",
         "gün ortası üçün"
       ],
-      "note": "Yüngül fermentasiya, ot və təzə ot notu. Gün ortası üçün.",
+      "note": "Yüngül və təmiz içim. Təravətli qarışıqlar üçün yaxşı baza.",
       "bulk": 3.7
     },
     {
@@ -90,7 +90,7 @@
         "gün ortası üçün",
         "axşam üçün"
       ],
-      "note": "Yalnız gənc tumurcuqlar. Ən zərif baza — kölgəsi az, ətri uzun.",
+      "note": "Zərif və yüngül baza. Yumşaq, incə aromalı qarışıqlar üçün.",
       "bulk": 4.8
     },
     {
@@ -110,7 +110,7 @@
         "soyuq havalar üçün",
         "axşam üçün"
       ],
-      "note": "Şəki dağlarından yığılan quru kəklikotu. Kəskin, tanış, isti.",
+      "note": "Tanış, lokal və aromatik bitki notu. Qarışığa isti xarakter qatır.",
       "bulk": 5.2
     },
     {
@@ -130,7 +130,7 @@
         "yay üçün",
         "yeməkdən sonra"
       ],
-      "note": "Sərinlədən, yeməkdən sonra ağırlığı götürən.",
+      "note": "Təravətli və sərin içim verir. Xüsusən yüngül qarışıqlarda yaxşı işləyir.",
       "bulk": 5.5
     },
     {
@@ -150,7 +150,7 @@
         "axşam üçün",
         "gecə üçün"
       ],
-      "note": "Bütöv çiçək başları. Yumşaq bal notu, axşamın sakit tərəfi.",
+      "note": "Yumşaq çiçək aroması və sakit içim hissi verir.",
       "bulk": 5
     },
     {
@@ -169,7 +169,7 @@
       "mood": [
         "axşam üçün"
       ],
-      "note": "Limon otu. Yüngül sitrus, heç bir turşuluq yox.",
+      "note": "Yüngül limon notu qatır, turşuluq olmadan. Yumşaq bitki qarışıqları üçün.",
       "bulk": 5.2
     },
     {
@@ -189,7 +189,7 @@
         "gecə üçün",
         "axşam üçün"
       ],
-      "note": "Az miqdarda güclüdür. Bir çimdik bütün qarışığı dəyişir.",
+      "note": "Güclü çiçək aroması verir. Az miqdar bütün qarışığı dəyişir.",
       "bulk": 2.6
     },
     {
@@ -209,7 +209,7 @@
         "soyuq havalar üçün",
         "axşam üçün"
       ],
-      "note": "Şirvan yaylaqlarının otu — quru saman və bal arası.",
+      "note": "Təbii bitki aroması, quru ot və yumşaq bal notları.",
       "bulk": 5.4
     },
     {
@@ -229,7 +229,7 @@
         "payız üçün",
         "gün ortası üçün"
       ],
-      "note": "Quba almasının qurusu. Təbii şirinlik, kömür qatmır.",
+      "note": "Təbii şirinlik və yumşaqlıq verir. Qarışığı daha rahat içimli edir.",
       "bulk": 2.9
     },
     {
@@ -249,7 +249,7 @@
         "soyuq havalar üçün",
         "payız üçün"
       ],
-      "note": "Turşməzə, dərin qırmızı rəng verir. Payızın öz dadı.",
+      "note": "Turşməzə meyvə notu və qırmızımtıl rəng verir.",
       "bulk": 2.1
     },
     {
@@ -269,7 +269,7 @@
         "soyuq havalar üçün",
         "qış üçün"
       ],
-      "note": "C vitamini ilə tanınan qırmızı meyvə. Qış qarışığının onurğası.",
+      "note": "Qırmızı rəng, turşməzə dad və qış qarışıqlarına dərinlik verir.",
       "bulk": 2.8
     },
     {
@@ -289,7 +289,7 @@
         "səhər üçün",
         "qış üçün"
       ],
-      "note": "Günəşdə qurudulmuş qabıq — ətri stəkan açılan kimi gəlir.",
+      "note": "Parlaq sitrus aroması verir. Qara və yaşıl çayla yaxşı balanslanır.",
       "bulk": 3.6
     },
     {
@@ -309,7 +309,7 @@
         "soyuq havalar üçün",
         "qış üçün"
       ],
-      "note": "Seylon qabığı, əl ilə sındırılıb. İsti, şirin, ağır.",
+      "note": "İsti, şirin və ədviyyatlı xarakter verir. Az miqdar kifayətdir.",
       "bulk": 3.2
     },
     {
@@ -329,7 +329,7 @@
         "soyuq havalar üçün",
         "səhər üçün"
       ],
-      "note": "Kəsilmiş quru kök. Boğazda yüngül istilik buraxır.",
+      "note": "Qarışığa yüngül kəskinlik və isti sonluq əlavə edir.",
       "bulk": 2.3
     },
     {
@@ -349,7 +349,7 @@
         "səhər üçün",
         "qış üçün"
       ],
-      "note": "Yaşıl qozalar bütöv qalır. Ən bahalı, ən az lazım olan.",
+      "note": "Güclü, ətirli və premium ədviyyat notu. Çox az miqdar kifayətdir.",
       "bulk": 4.2
     },
     {
@@ -369,7 +369,7 @@
         "qış üçün",
         "soyuq havalar üçün"
       ],
-      "note": "Çox güclüdür — iki-üç dənə bütün çaydanı tutur.",
+      "note": "Çox güclü ədviyyatdır. Kiçik miqdar qarışığa dərin istilik verir.",
       "bulk": 2
     }
   ],

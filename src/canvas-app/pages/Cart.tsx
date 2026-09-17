@@ -1,7 +1,7 @@
 import { Counter, Reveal } from '../components/Reveal'
 import { Footer } from '../sections/Footer'
 import { BY_ID } from '../../shared/data/ingredients'
-import { rgb } from '../../shared/lib/blend'
+import { formatGrams, rgb } from '../../shared/lib/blend'
 import { DELIVERY, manat, subtotal } from '../../shared/lib/pricing'
 import { Link, ROUTES } from '../lib/router'
 import type { CartLine } from '../../shared/types'
@@ -72,7 +72,7 @@ export function Cart({ lines, onQty, onRemove }: Props) {
                       </h2>
                       <p className="mt-1 font-sans text-[12px] leading-relaxed text-cream/40">
                         {l.items
-                          .map((i) => `${BY_ID[i.ingredientId]?.name} ${i.grams} q`)
+                          .map((i) => `${BY_ID[i.ingredientId]?.name} ${formatGrams(i.grams)} q`)
                           .join(' · ')}
                       </p>
                       <p className="mt-1.5 font-sans text-[11.5px] text-cream/28">

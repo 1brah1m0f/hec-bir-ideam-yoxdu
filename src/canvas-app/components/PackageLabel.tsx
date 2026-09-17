@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { BY_ID } from '../../shared/data/ingredients'
-import { rgb } from '../../shared/lib/blend'
+import { blendName } from '../../shared/lib/copy'
+import { formatGrams, rgb } from '../../shared/lib/blend'
 import { manat } from '../../shared/lib/pricing'
 import type { WeighedItem } from '../../shared/types'
 
@@ -23,7 +24,7 @@ export function PackageLabel({
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
-  const title = name.trim() || 'Adsız qarışıq'
+  const title = blendName(name)
 
   function move(e: React.PointerEvent) {
     const el = ref.current
@@ -102,7 +103,7 @@ export function PackageLabel({
                   className="flex justify-between font-sans text-[9.5px] text-cream/55"
                 >
                   <span className="truncate pr-2">{BY_ID[it.ingredientId]?.name}</span>
-                  <span className="shrink-0 tabular-nums">{it.grams} q</span>
+                  <span className="shrink-0 tabular-nums">{formatGrams(it.grams)} q</span>
                 </li>
               ))}
               {items.length === 0 && (

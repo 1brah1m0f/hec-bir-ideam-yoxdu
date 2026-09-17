@@ -35,12 +35,12 @@ export function Hero({ onChoose, onStart }: Props) {
                 <span className="animate-glow absolute inset-0 rounded-full bg-brass-400" />
                 <span className="absolute inset-0 rounded-full bg-brass-400" />
               </span>
-              Bakı · fərdi çay qarışığı
+              Azərbaycan çay ritualı · Sənin dadına görə
             </span>
           </Reveal>
 
           <Lines
-            lines={['Öz çayını', 'özün qar.']}
+            lines={['Öz çayını', 'öz zövqünlə yarat.']}
             className="mt-5 font-serif text-[clamp(2.9rem,8.6vw,5.6rem)] font-light leading-[0.94] tracking-[-0.02em] text-cream"
             delay={120}
             step={110}
@@ -51,21 +51,25 @@ export function Hero({ onChoose, onStart }: Props) {
               On yeddi tərkib. Yüz qram. Kəklikotunu zoğalla, lavandanı ağ çayla
               qarışdır — bankaya nəyin töküldüyünü elə burada, canlı gör.
             </p>
+            <p className="mt-4 max-w-[30rem] font-sans text-[13.5px] leading-relaxed text-cream/45 text-pretty">
+              Sevdiyiniz tərkibləri seçin, qarışığınız gözünüzün önündə formalaşsın və
+              adınızla paketlənsin.
+            </p>
           </Reveal>
 
           <Reveal kind="up" delay={560}>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <button type="button" onClick={onStart} className="btn btn-gold">
-                Öz qarışığını düzəlt
+                Öz qarışığımı yarat
               </button>
-              <a href="#terkib" className="btn btn-ghost">
-                Əvvəlcə tərkiblərə bax
+              <a href="#dad" className="btn btn-ghost">
+                Mənə uyğun dadı tap
               </a>
             </div>
           </Reveal>
 
           <Reveal kind="up" delay={700}>
-            <div className="mt-11">
+            <div id="dad" className="mt-11 scroll-mt-24">
               <div className="mb-3 font-sans text-[11px] tracking-[0.2em] text-cream/30">
                 VƏ YA HAZIR BİR YERDƏN BAŞLA
               </div>

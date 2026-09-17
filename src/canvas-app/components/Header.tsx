@@ -4,7 +4,7 @@ import { Link, ROUTES } from '../lib/router'
 const LANDING_NAV = [
   { href: '#hekaye', label: 'Niyə' },
   { href: '#nece', label: 'Necə işləyir' },
-  { href: '#terkib', label: 'Tərkib' },
+  { href: '#terkib', label: 'Dadlar' },
 ]
 
 interface Props {
@@ -104,7 +104,7 @@ export function Header({ cartCount, route }: Props) {
         <div className="flex items-center gap-2.5">
           {onLanding && (
             <Link to={ROUTES.mix} className="btn btn-quiet hidden sm:inline-flex">
-              Qarışıq düzəlt
+              Qarışıq yarat
             </Link>
           )}
           <Link

@@ -15,18 +15,24 @@ export function Catalog({ selected, onPick, onStart }: Props) {
     <section id="terkib" className="relative py-[12vh]">
       <div className="mx-auto max-w-7xl px-6 sm:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-md">
+          <div className="max-w-lg">
             <Reveal kind="fade">
-              <span className="eyebrow">Tərkib</span>
+              <span className="eyebrow">Qarışığın elementləri</span>
             </Reveal>
             <Reveal kind="up" delay={80}>
               <h2 className="mt-4 font-serif text-[clamp(2rem,4.6vw,3.1rem)] font-light leading-[1.05] tracking-[-0.015em] text-cream">
-                On yeddi tərkib
+                Dadın buradan başlayır
               </h2>
+            </Reveal>
+            <Reveal kind="up" delay={140}>
+              <p className="mt-4 max-w-md font-sans text-[13.5px] leading-relaxed text-cream/50">
+                Hər tərkib qarışığın xarakterini dəyişir: baza güc verir, otlar ətir qatır,
+                meyvələr rəng və yumşaqlıq gətirir, ədviyyatlar isə istilik əlavə edir.
+              </p>
             </Reveal>
           </div>
           <Reveal kind="up" delay={160}>
-            <p className="max-w-xs font-sans text-[13px] leading-relaxed text-cream/40">
+            <p className="max-w-xs font-sans text-[13px] leading-relaxed text-cream/45">
               Qiymətlər 100 qram üçündür. Qarışığın son qiyməti tərkiblərin nisbətinə görə
               hesablanır. Bir kartın üstünə bassan, onu qarışığa atıb səni qarışdırıcıya
               aparırıq.
@@ -39,12 +45,19 @@ export function Catalog({ selected, onPick, onStart }: Props) {
             <div key={cat.id}>
               <Reveal kind="fade" className="mb-5 flex items-baseline gap-4">
                 <h3 className="font-serif text-[1.35rem] font-light text-cream/90">{cat.label}</h3>
-                <span className="font-sans text-[12px] text-cream/30">{cat.blurb}</span>
+                <span className="font-sans text-[12px] text-cream/40">{cat.blurb}</span>
               </Reveal>
 
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div
+                className={
+                  cat.id === 'baza'
+                    ? 'grid gap-3 sm:grid-cols-3'
+                    : 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                }
+              >
                 {INGREDIENTS.filter((i) => i.category === cat.id).map((ing, i) => {
                   const active = selected.has(ing.id)
+                  const base = cat.id === 'baza'
                   return (
                     <Reveal key={ing.id} kind="up" delay={i * 60}>
                       <button
@@ -52,13 +65,13 @@ export function Catalog({ selected, onPick, onStart }: Props) {
                         onClick={() => onPick(ing.id)}
                         aria-pressed={active}
                         className={[
-                          'group relative flex h-full w-full items-start gap-4 overflow-hidden rounded-[3px] border p-4 text-left transition-all duration-[650ms] [transition-timing-function:var(--ease)] hover:-translate-y-1 active:scale-[0.98] active:duration-150',
+                          'group relative flex h-full w-full items-start gap-4 overflow-hidden rounded-[3px] border text-left transition-all duration-[650ms] [transition-timing-function:var(--ease)] hover:-translate-y-1 active:scale-[0.98] active:duration-150',
+                          base ? 'p-5 sm:p-6' : 'p-4',
                           active
                             ? 'border-brass-500/60 bg-brass-500/[0.09] shadow-[0_18px_44px_-28px_rgba(199,154,75,0.9)]'
                             : 'border-cream/[0.09] bg-[#120c08]/70 backdrop-blur-md hover:border-cream/25 hover:bg-[#1a120c]/80',
                         ].join(' ')}
                       >
-                        {/* a soft light sweeping across the card, the same gesture as the gold buttons */}
                         <span
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cream/[0.06] to-transparent transition-transform duration-[900ms] [transition-timing-function:var(--ease)] group-hover:translate-x-full"
@@ -66,7 +79,7 @@ export function Catalog({ selected, onPick, onStart }: Props) {
                         <span className="relative mt-0.5 shrink-0">
                           <IngredientGlyph
                             shape={ing.shape}
-                            size={42}
+                            size={base ? 52 : 42}
                             className={
                               active
                                 ? 'transition-transform duration-700 group-hover:scale-110'
@@ -77,14 +90,19 @@ export function Catalog({ selected, onPick, onStart }: Props) {
 
                         <span className="min-w-0 flex-1">
                           <span className="flex items-baseline justify-between gap-2">
-                            <span className="font-serif text-[1.05rem] leading-tight text-cream">
+                            <span
+                              className={[
+                                'font-serif leading-tight text-cream',
+                                base ? 'text-[1.2rem]' : 'text-[1.05rem]',
+                              ].join(' ')}
+                            >
                               {ing.name}
                             </span>
                             <span className="shrink-0 font-sans text-[11.5px] tabular-nums text-brass-400/85">
                               {manat(ing.price)}
                             </span>
                           </span>
-                          <span className="mt-1.5 block font-sans text-[12px] leading-relaxed text-cream/40">
+                          <span className="mt-1.5 block font-sans text-[12.5px] leading-relaxed text-cream/50">
                             {ing.note}
                           </span>
                         </span>
@@ -126,13 +144,13 @@ export function Catalog({ selected, onPick, onStart }: Props) {
               <h3 className="font-serif text-[1.7rem] font-light leading-tight text-cream">
                 Hansını seçəcəyini bilmirsən?
               </h3>
-              <p className="mt-2 font-sans text-[13px] leading-relaxed text-cream/45">
+              <p className="mt-2 font-sans text-[13px] leading-relaxed text-cream/50">
                 Qarışdırıcıda boş bankadan başla və ya bizə seçdir — nisbəti sonra
                 dəyişə bilərsən.
               </p>
             </div>
             <button type="button" onClick={onStart} className="btn btn-gold">
-              Qarışdırıcıya keç
+              Qarışıq yarat
             </button>
           </div>
         </Reveal>

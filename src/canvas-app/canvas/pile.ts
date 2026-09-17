@@ -152,13 +152,22 @@ function makeGrain(ing: string, index: number, offset: number, variants: number)
   let d = r * Math.sin(a)
   let v = s3
 
+  const base = BY_ID[ing]?.category === 'baza'
+  if (base) {
+    // tea leaves sit low and packed; additions scatter above them
+    v = v ** 1.25 * 0.58
+    u *= 0.86 + v * 0.1
+  } else {
+    v = 0.3 + v * 0.7
+  }
+
   const front = index < FRONT_GRAINS
   if (front) {
     // pinned to the front glass, and spread up the height so a trace ingredient
     // is findable rather than buried at the bottom
     d = 0.62 + rnd() * 0.3
     u = (rnd() * 2 - 1) * 0.72
-    v = 0.16 + ((index + rnd() * 0.7) / FRONT_GRAINS) * 0.7
+    v = 0.1 + ((index + rnd() * 0.7) / FRONT_GRAINS) * (base ? 0.42 : 0.7)
   }
 
   const back = (1 - d) / 2
