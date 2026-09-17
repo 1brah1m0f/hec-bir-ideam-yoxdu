@@ -4,7 +4,7 @@ import { Link, ROUTES } from '../lib/router'
 const LANDING_NAV = [
   { href: '#hekaye', label: 'Niyə' },
   { href: '#nece', label: 'Necə işləyir' },
-  { href: '#terkib', label: 'Tərkib' },
+  { href: '#terkib', label: 'Dadlar' },
 ]
 
 interface Props {

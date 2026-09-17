@@ -1,6 +1,7 @@
 import { BY_ID, isBase } from '../data/ingredients'
 import type { WeighedItem } from '../types'
 import { cap, f } from './az'
+import { INSIGHT_CLAUSE } from './copy'
 
 interface Candidate {
   priority: number
@@ -60,187 +61,61 @@ const CONFLICTS: [string, string, string[]][] = [
   ],
 ]
 
-const PAIRS: [string, string, string[]][] = [
-  [
-    'keklikotu',
-    'qara-cay',
-    [
-      'Kəklikotu qara çayla yaxşı gedir, ikisi bir-birini tamamlayır.',
-      'Kəklikotu qara çayın üstündə düzgün oturur.',
-    ],
-  ],
-  [
-    'nane',
-    'yasil-cay',
-    [
-      'Nanə yaşıl çayla təmiz gedir, qarışıq yüngül qalır.',
-      'Yaşıl çay nanəni yaxşı daşıyır.',
-    ],
-  ],
-  [
-    'darcin',
-    'alma',
-    ['Darçınla alma klassik cütdür, bu qarışıqda dinc oturur.', 'Alma darçını yumşaldır.'],
-  ],
-  [
-    'itburnu',
-    'zogal',
-    [
-      'İtburnu ilə zoğal eyni turş xətdə gedir, rəng də tünd qırmızıya çəkir.',
-      'Zoğalla itburnu bir-birini gücləndirir.',
-    ],
-  ],
-  [
-    'portagal-qabigi',
-    'darcin',
-    [
-      'Portağal qabığı darçınla soyuq havalar üçün tanış bir cüt qurur.',
-      'Darçın portağal qabığının arxasında yaxşı dayanır.',
-    ],
-  ],
-  [
-    'cobanyastigi',
-    'ag-cay',
-    [
-      'Çobanyastığı ağ çayla incə qalır, axşam üçün rahat qarışıqdır.',
-      'Ağ çay çobanyastığının qabağına keçmir, bu yaxşıdır.',
-    ],
-  ],
-  [
-    'hil',
-    'qara-cay',
-    ['Hil qara çaya dərinlik verir, ölçünü qaçırmasan yaxşı işləyir.'],
-  ],
-  [
-    'melissa',
-    'ag-cay',
-    ['Melissa ağ çayla çox yumşaq gedir, axşam üçün uyğundur.'],
-  ],
-  [
-    'zencefil',
-    'portagal-qabigi',
-    ['Zəncəfillə portağal qabığı bir-birini itiləşdirir, soyuq havalar üçün yaxşıdır.'],
-  ],
-  [
-    'lavanda',
-    'ag-cay',
-    ['Lavanda ağ çayın üstündə açıq oxunur, azı da kifayət edir.'],
-  ],
-  [
-    'keklikotu',
-    'dag-cayi',
-    ['Kəklikotu ilə dağ çayı eyni dağ xəttindədir, birlikdə səliqəli çıxır.'],
-  ],
-  [
-    'zogal',
-    'qara-cay',
-    ['Zoğal qara çayı turşluğa çəkir, rəng də dərhal qırmızılaşır.'],
-  ],
-]
-
 const SPICE_IDS = ['darcin', 'zencefil', 'hil', 'mixek']
 
-const MOOD_LINES: Record<string, string[]> = {
-  'axşam üçün': [
-    'Bu qarışıq axşam üçün oturur, tələsmədən içiləsi bir şeydir.',
-    'Axşam üçün balanslı çıxdı, heç nə qabağa keçmir.',
-  ],
-  'səhər üçün': [
-    'Səhər üçün kifayət qədər dolğun, xətti aydındır.',
-    'Bu tərkib səhər üçün oyaq bir xarakter verir.',
-  ],
-  'soyuq havalar üçün': [
-    'Soyuq havalar üçün yaxşı yığılıb, isti tərəfi güclüdür.',
-    'Soyuq havalar üçün düzgün ağırlıqdadır.',
-  ],
-  'qış üçün': ['Qış üçün ədviyyatlı və dolğun bir xətt tutub.'],
-  'yay üçün': ['Yay üçün yüngül və sərin tərəfdə qalır.'],
-  'payız üçün': ['Payız üçün meyvəli və mülayim bir qarışıqdır.'],
-  'gün ortası üçün': ['Gün ortası üçün nə ağır, nə də boşdur — ortada dayanır.'],
-  'gecə üçün': ['Gecə üçün sakit bir tərkibdir, heç bir tərəfi kəskin deyil.'],
-  'yeməkdən sonra': ['Yeməkdən sonra üçün təmiz və sadə çıxır.'],
+const MOOD_RESULT: Record<string, string> = {
+  'axşam üçün': 'axşam üçün yumşaq, amma çay xarakterini itirməyən qarışıq',
+  'səhər üçün': 'səhər üçün dolğun və oyaq bir qarışıq',
+  'soyuq havalar üçün': 'soyuq havalar üçün isti və dərin bir qarışıq',
+  'qış üçün': 'qış üçün ədviyyatlı, dolğun bir qarışıq',
+  'yay üçün': 'yay üçün yüngül və sərin bir qarışıq',
+  'payız üçün': 'payız üçün meyvəli və mülayim bir qarışıq',
+  'gün ortası üçün': 'gün ortası üçün nə ağır, nə də boş bir qarışıq',
+  'gecə üçün': 'gecə üçün sakit, kəskinliyi olmayan bir qarışıq',
+  'yeməkdən sonra': 'yeməkdən sonra üçün təmiz və yüngül bir qarışıq',
 }
 
-export function comment(items: WeighedItem[]): string {
+function joinClauses(parts: string[]): string {
+  if (parts.length === 1) return parts[0]
+  if (parts.length === 2) return `${parts[0]}, ${parts[1]}`
+  return `${parts.slice(0, -1).join(', ')}, ${parts[parts.length - 1]}`
+}
+
+/**
+ * The running character sentence for the mixer — last pick plus how the cup
+ * reads as a whole, not a generic mood line.
+ */
+export function blendInsight(items: WeighedItem[]): string {
   if (items.length === 0) {
-    return 'Banka hələ boşdur — bir baza çay seç, oradan başlayaq.'
+    return 'Əvvəl bir baza seçin. Qarışığın əsas dadı buradan başlayır.'
   }
 
   const seed = hash(items.map((i) => `${i.ingredientId}:${i.grams}`).join('|'))
-  const grams = new Map(items.map((i) => [i.ingredientId, i.grams]))
   const base = items.find((i) => isBase(i.ingredientId))
   const extras = items
     .filter((i) => !isBase(i.ingredientId))
     .sort((a, b) => b.grams - a.grams)
 
-  const cands: Candidate[] = []
-
   if (extras.length === 0 && base) {
-    cands.push({
-      priority: 90,
-      text: pick(
-        [
-          `Təmiz ${f(base.ingredientId).nom} — yaxşı təməldir, amma hələ öz xarakteri yoxdur.`,
-          `Hələlik yalnız ${f(base.ingredientId).nom} var, üstünə bir ot və ya ədviyyat əlavə etsən qarışıq başlayar.`,
-        ],
-        seed,
-      ),
+    return pick(
+      [
+        `${cap(f(base.ingredientId).nom)} ${INSIGHT_CLAUSE[base.ingredientId]}. Üstünə bir ot və ya meyvə qatanda qarışıq öz xəttini tapacaq.`,
+        `Hələlik yalnız ${f(base.ingredientId).nom} var — yaxşı təməldir, amma xarakter hələ əlavələrdən gələcək.`,
+      ],
+      seed,
+    )
+  }
+
+  const named: { name: string; clause: string }[] = []
+  if (base && INSIGHT_CLAUSE[base.ingredientId]) {
+    named.push({
+      name: cap(f(base.ingredientId).nom),
+      clause: INSIGHT_CLAUSE[base.ingredientId],
     })
   }
-
-  const loud = extras.find((e) => {
-    const ing = BY_ID[e.ingredientId]
-    return ing && e.grams >= 30 && ing.strength >= 1.4
-  })
-  if (loud) {
-    const others = extras.filter((e) => e.ingredientId !== loud.ingredientId)
-    const victim = others[others.length - 1]
-    cands.push({
-      priority: 85,
-      text: victim
-        ? `${cap(f(loud.ingredientId).nom)} ${loud.grams} qramdır — bu qədər olsa ${f(victim.ingredientId).acc} bağlayacaq.`
-        : `${cap(f(loud.ingredientId).nom)} ${loud.grams} qramdır, bu qədəri qarışığın qalan hissəsini örtür.`,
-    })
-  }
-
-  if (base && base.grams < 25) {
-    cands.push({
-      priority: 80,
-      text: `${cap(f(base.ingredientId).nom)} cəmi ${base.grams} qramdır — qarışığın dayağı zəifləyir.`,
-    })
-  }
-
-  for (const [a, b, lines] of CONFLICTS) {
-    const ga = grams.get(a) ?? 0
-    const gb = grams.get(b) ?? 0
-    if (ga >= 12 && gb >= 12) cands.push({ priority: 70, text: pick(lines, seed) })
-  }
-
-  const spiceTotal = SPICE_IDS.reduce((sum, id) => sum + (grams.get(id) ?? 0), 0)
-  if (spiceTotal >= 35) {
-    cands.push({
-      priority: 65,
-      text: `Ədviyyatlar birlikdə ${spiceTotal} qramdır, çayın öz dadı arxa plana keçir.`,
-    })
-  }
-
-  if (items.length >= 7) {
-    cands.push({
-      priority: 60,
-      text: `${items.length} tərkib var — qarışıq öz xəttini itirməyə başlayır.`,
-    })
-  }
-
-  for (const [a, b, lines] of PAIRS) {
-    if (grams.has(a) && grams.has(b)) cands.push({ priority: 40, text: pick(lines, seed) })
-  }
-
-  if (extras.length === 1 && base) {
-    const e = extras[0]
-    cands.push({
-      priority: 30,
-      text: `${cap(f(base.ingredientId).nom)} və ${f(e.ingredientId).nom} — sadə cütdür, üçüncü bir şey əlavə etsən dərinlik qazanar.`,
-    })
+  for (const e of extras) {
+    const clause = INSIGHT_CLAUSE[e.ingredientId]
+    if (clause) named.push({ name: f(e.ingredientId).nom, clause })
   }
 
   const moodCount = new Map<string, number>()
@@ -250,13 +125,82 @@ export function comment(items: WeighedItem[]): string {
     for (const m of ing.mood) moodCount.set(m, (moodCount.get(m) ?? 0) + it.grams)
   }
   const topMood = [...moodCount.entries()].sort((a, b) => b[1] - a[1])[0]
-  if (topMood && MOOD_LINES[topMood[0]]) {
-    cands.push({ priority: 10, text: pick(MOOD_LINES[topMood[0]], seed) })
+  const result = topMood ? MOOD_RESULT[topMood[0]] : null
+
+  if (named.length === 0) return 'Tərkib balansdadır, bu haldan da göndərmək olar.'
+
+  const phrases = named.map((p, i) =>
+    i === named.length - 1 && named.length > 1
+      ? `${p.name} isə ${p.clause}`
+      : `${p.name} ${p.clause}`,
+  )
+  const body = joinClauses(phrases)
+
+  if (result) return `${body}. Nəticə: ${result}.`
+  return `${body}.`
+}
+
+/**
+ * A short craft note from the "çay ustası" — warnings first, then a calm
+ * confirmation when the recipe is already sitting well.
+ */
+export function masterNote(items: WeighedItem[]): string | null {
+  if (items.length === 0) return null
+
+  const seed = hash(items.map((i) => `${i.ingredientId}:${i.grams}`).join('|'))
+  const grams = new Map(items.map((i) => [i.ingredientId, i.grams]))
+  const extras = items.filter((i) => !isBase(i.ingredientId)).sort((a, b) => b.grams - a.grams)
+  const cands: Candidate[] = []
+
+  const loud = extras.find((e) => {
+    const ing = BY_ID[e.ingredientId]
+    return ing && e.grams >= 12 && ing.strength >= 1.4
+  })
+  if (loud) {
+    cands.push({
+      priority: 85,
+      text: `${cap(f(loud.ingredientId).nom)} bu qədər olsa qalan dadları örtə bilər — bir pillə azalt.`,
+    })
   }
 
-  cands.push({ priority: 0, text: 'Tərkib balansdadır, bu haldan da göndərmək olar.' })
+  for (const [a, b, lines] of CONFLICTS) {
+    const ga = grams.get(a) ?? 0
+    const gb = grams.get(b) ?? 0
+    if (ga >= 1 && gb >= 1) cands.push({ priority: 70, text: pick(lines, seed) })
+  }
+
+  const spiceTotal = SPICE_IDS.reduce((sum, id) => sum + (grams.get(id) ?? 0), 0)
+  const total = items.reduce((s, it) => s + it.grams, 0) || 1
+  if (spiceTotal / total >= 0.08) {
+    cands.push({
+      priority: 65,
+      text: 'Ədviyyatlar birlikdə çoxdur, çayın öz dadı arxa plana keçir.',
+    })
+  }
+
+  if (items.length >= 5) {
+    cands.push({
+      priority: 60,
+      text: '4-dən çox tərkib dadı qarışdıra bilər. Birini çıxarsan xətt daha aydın olar.',
+    })
+  }
+
+  if (cands.length === 0) {
+    return pick(
+      [
+        'Bu haldan da göndərmək olar — baza öndə qalır, əlavələr onu tamamlayır.',
+        'Nisbət çay ustası məntiqi ilə oturub: əsas dad bazadadır, ətir üstündədir.',
+      ],
+      seed,
+    )
+  }
 
   const best = cands.reduce((a, b) => (b.priority > a.priority ? b : a))
   const tied = cands.filter((c) => c.priority === best.priority)
   return pick(tied, seed >>> 3).text
+}
+
+/** @deprecated use blendInsight — kept so older call sites keep compiling during the swap */
+export function comment(items: WeighedItem[]): string {
+  return blendInsight(items)
 }

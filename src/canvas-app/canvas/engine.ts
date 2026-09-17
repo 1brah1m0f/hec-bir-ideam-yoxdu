@@ -45,14 +45,14 @@ const BREW_FILL = 1.5
 const STEEP_TIME = 2.8
 
 /** Dry pour, in seconds. */
-const FALL_GRAVITY = 7
-const SETTLE_TAU = 0.11
+const FALL_GRAVITY = 4.4
+const SETTLE_TAU = 0.14
 const LEAVE_TIME = 0.34
 const LEVEL_TAU = 0.16
 /** Longest gap between two pieces entering the jar. */
-const MAX_GAP = 0.03
-/** Window a single ingredient's shower is spread over. */
-const SHOWER = 0.34
+const MAX_GAP = 0.07
+/** Window a single ingredient's shower is spread over — 0.8–1.2 s by design. */
+const SHOWER = 1.05
 
 /**
  * Piece sizes were measured against the tea glass's bore; the jar is wider
@@ -604,7 +604,7 @@ export class TeaEngine {
   /** Sends a piece back in through the mouth of the jar. */
   private launch(p: P, index: number, total: number) {
     const g = this.geom
-    // one ingredient's worth of pieces lands inside the 400–700 ms the design
+    // one ingredient's worth of pieces lands inside the 0.8–1.2 s the design
     // asks for; a whole preset arriving at once is deliberately longer
     const gap = Math.max(0.0035, Math.min(MAX_GAP, SHOWER / Math.max(1, total)))
     p.state = S.Falling

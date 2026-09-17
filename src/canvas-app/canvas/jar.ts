@@ -8,6 +8,7 @@ import {
   WHITE,
   type Bounds,
 } from './paint'
+import { blendName } from '../../shared/lib/copy'
 
 /**
  * The storage jar: a rounded-bottomed glass body tapering to a short neck under
@@ -628,58 +629,58 @@ export function drawLabel(
   pack: number,
   color: [number, number, number],
 ) {
-  const text = name.trim() || 'Fərdi qarışıq'
-  const w = g.maxHalf * 1.06
-  const h = g.maxHalf * 0.44
+  const text = blendName(name)
+  const w = g.maxHalf * 0.84
+  const h = g.maxHalf * 0.34
   const cy = yAt(g, 0.5)
   const x = g.cx - w / 2
   const y = cy - h / 2
 
   ctx.save()
   // sits behind the front wall's specular, so it reads as being under glass
-  ctx.globalAlpha = 0.88
+  ctx.globalAlpha = 0.7
   ctx.beginPath()
-  ctx.roundRect(x, y, w, h, h * 0.06)
+  ctx.roundRect(x, y, w, h, h * 0.05)
   const paper = ctx.createLinearGradient(x, y, x + w, y + h)
-  paper.addColorStop(0, '#e4d5b8')
-  paper.addColorStop(0.5, '#d5c3a1')
-  paper.addColorStop(1, '#b9a481')
+  paper.addColorStop(0, '#d6c7aa')
+  paper.addColorStop(0.5, '#cbb89a')
+  paper.addColorStop(1, '#b09a7a')
   ctx.fillStyle = paper
   ctx.fill()
 
-  ctx.strokeStyle = rgba(mix(color, BLACK, 0.35), 0.5)
-  ctx.lineWidth = Math.max(0.7, g.maxHalf * 0.012)
+  ctx.strokeStyle = rgba(mix(color, BLACK, 0.4), 0.38)
+  ctx.lineWidth = Math.max(0.6, g.maxHalf * 0.01)
   ctx.stroke()
 
   ctx.beginPath()
-  ctx.roundRect(x + h * 0.1, y + h * 0.1, w - h * 0.2, h - h * 0.2, h * 0.04)
-  ctx.strokeStyle = rgba(mix(color, BLACK, 0.2), 0.28)
-  ctx.lineWidth = Math.max(0.5, g.maxHalf * 0.007)
+  ctx.roundRect(x + h * 0.1, y + h * 0.1, w - h * 0.2, h - h * 0.2, h * 0.03)
+  ctx.strokeStyle = rgba(mix(color, BLACK, 0.25), 0.22)
+  ctx.lineWidth = Math.max(0.4, g.maxHalf * 0.006)
   ctx.stroke()
 
-  ctx.fillStyle = 'rgba(46,30,16,0.88)'
+  ctx.fillStyle = 'rgba(46,30,16,0.82)'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
 
-  let size = h * 0.34
+  let size = h * 0.3
   ctx.font = `400 ${size}px "Source Serif 4", Georgia, serif`
   // long names shrink rather than spill over the edge of the paper
-  while (ctx.measureText(text).width > w * 0.82 && size > h * 0.15) {
+  while (ctx.measureText(text).width > w * 0.82 && size > h * 0.14) {
     size *= 0.92
     ctx.font = `400 ${size}px "Source Serif 4", Georgia, serif`
   }
   ctx.fillText(text, g.cx, cy - h * 0.06)
 
-  ctx.font = `500 ${h * 0.15}px "Inter", system-ui, sans-serif`
-  ctx.fillStyle = 'rgba(74,50,28,0.62)'
-  ctx.fillText(`${pack} q · ÖZ ÇAYIN`, g.cx, cy + h * 0.26)
+  ctx.font = `500 ${h * 0.13}px "Inter", system-ui, sans-serif`
+  ctx.fillStyle = 'rgba(74,50,28,0.55)'
+  ctx.fillText(`${pack} q · fərdi resept`, g.cx, cy + h * 0.24)
 
   // a highlight raking across the paper, from the same key light as the glass
   ctx.globalCompositeOperation = 'lighter'
   ctx.beginPath()
-  ctx.roundRect(x, y, w, h, h * 0.06)
+  ctx.roundRect(x, y, w, h, h * 0.05)
   const sheen = ctx.createLinearGradient(x, y, x + w * 0.6, y + h)
-  sheen.addColorStop(0, 'rgba(255,250,236,0.22)')
+  sheen.addColorStop(0, 'rgba(255,250,236,0.12)')
   sheen.addColorStop(0.5, 'rgba(255,250,236,0.02)')
   sheen.addColorStop(1, 'rgba(255,250,236,0)')
   ctx.fillStyle = sheen

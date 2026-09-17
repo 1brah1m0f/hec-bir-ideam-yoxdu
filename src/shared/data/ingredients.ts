@@ -31,10 +31,10 @@ export function isPackageSize(n: unknown): n is number {
 }
 
 export const CATEGORIES: { id: Category; label: string; blurb: string }[] = [
-  { id: 'baza', label: 'Baza çay', blurb: 'Qarışığın onurğası — biri mütləqdir.' },
-  { id: 'ot', label: 'Otlar', blurb: 'Ətir və xarakter. Az miqdar çox şey dəyişir.' },
-  { id: 'meyve', label: 'Quru meyvə', blurb: 'Şirinlik, turşuluq və rəng.' },
-  { id: 'edviyyat', label: 'Ədviyyat', blurb: 'İstilik. Ehtiyatlı olun — güclüdür.' },
+  { id: 'baza', label: 'Çay bazası', blurb: 'Qarışığın əsas xarakteri — bir baza seçilir.' },
+  { id: 'ot', label: 'Bitki otları', blurb: 'Yumşaqlıq və aroma qatır.' },
+  { id: 'meyve', label: 'Meyvə notları', blurb: 'Rəng, yumşaqlıq və turşməzəlik verir.' },
+  { id: 'edviyyat', label: 'İsti notlar', blurb: 'İstilik və dərinlik. Az miqdar kifayətdir.' },
 ]
 
 export const BY_ID: Record<string, Ingredient> = Object.fromEntries(

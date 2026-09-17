@@ -13,7 +13,8 @@ import type { Mode } from './canvas/engine'
 import { navigate, ROUTES, useRoute } from './lib/router'
 import { isBase, PACKAGE_SIZES } from '../shared/data/ingredients'
 import { addIngredient, blendColor, removeIngredient, setLevel, weigh } from '../shared/lib/blend'
-import { comment } from '../shared/lib/commentary'
+import { blendInsight, masterNote } from '../shared/lib/commentary'
+import { BENEFIT, blendName } from '../shared/lib/copy'
 import { blendPrice } from '../shared/lib/pricing'
 import { PRESETS, randomBlend } from '../shared/lib/presets'
 import type { BlendItem, Customer, EntryChoice, Level, OrderResponse } from '../shared/types'
@@ -28,7 +29,7 @@ export default function CanvasApp() {
     <GlassStage
       items={weighed}
       color={color}
-      name={draft.name}
+      name={blendName(draft.name)}
       size={draft.size}
       mode={draft.mode}
     >
@@ -64,11 +65,14 @@ function Shop({
   const route = useRoute()
   const [receipt, setReceipt] = useState<Receipt | null>(null)
   const [toast, setToast] = useState<ToastMessage | null>(null)
+  const [justAdded, setJustAdded] = useState<string | null>(null)
   const cart = useCart()
 
   const weighed = useMemo(() => weigh(items, size), [items, size])
   const color = useMemo(() => blendColor(weighed), [weighed])
-  const line = useMemo(() => comment(weighed), [weighed])
+  const line = useMemo(() => blendInsight(weighed), [weighed])
+  const master = useMemo(() => masterNote(weighed), [weighed])
+  const lastBenefit = justAdded ? (BENEFIT[justAdded] ?? null) : null
   const price = useMemo(() => blendPrice(weighed, size), [weighed, size])
   /** what the same recipe costs in every pouch size — shown on the size cards */
   const sizePrices = useMemo(
@@ -104,13 +108,21 @@ function Shop({
   }
 
   function toggle(id: string) {
+    const already = items.some((i) => i.ingredientId === id)
     setItems((prev) => {
       if (prev.some((i) => i.ingredientId === id)) {
         return isBase(id) ? prev : removeIngredient(prev, id)
       }
       return addIngredient(prev, id)
     })
+    if (!already) setJustAdded(id)
   }
+
+  useEffect(() => {
+    if (!justAdded) return
+    const t = window.setTimeout(() => setJustAdded(null), 1200)
+    return () => window.clearTimeout(t)
+  }, [justAdded])
 
   /** From the catalogue on the landing page: take it, then go and mix it. */
   function pick(id: string) {
@@ -126,7 +138,7 @@ function Shop({
   }
 
   function addToCart() {
-    const title = name.trim() || 'Adsız qarışıq'
+    const title = blendName(name)
     cart.add(title, weighed, price, size)
     setToast({
       id: Date.now(),
@@ -153,6 +165,9 @@ function Shop({
             items={weighed}
             selected={selected}
             line={line}
+            master={master}
+            lastBenefit={lastBenefit}
+            justAdded={justAdded}
             price={price}
             sizePrices={sizePrices}
             hasBase={hasBase}

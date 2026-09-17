@@ -18,7 +18,7 @@ export function Landing({ selected, onChoose, onPick, onStart }: Props) {
       <main>
         <Hero onChoose={onChoose} onStart={onStart} />
         <Marquee />
-        <Story />
+        <Story onStart={onStart} />
         <Catalog selected={selected} onPick={onPick} onStart={onStart} />
       </main>
       <Footer />

@@ -3,22 +3,22 @@ import { Lines, Reveal } from '../components/Reveal'
 const STEPS = [
   {
     n: '01',
-    title: 'Baza seç',
-    body: 'Qara, yaşıl və ya ağ çay — qarışığın onurğası. Biri mütləqdir, ikisi olmur.',
+    title: 'Seç',
+    body: 'Baza çayı və sevdiyin tərkibləri seç.',
   },
   {
     n: '02',
-    title: 'Üstünə qat',
-    body: 'Ot, quru meyvə, ədviyyat. Hər tərkibin nisbətini az, orta və ya çox kimi ver; yüz qram özü bölünür.',
+    title: 'Gör',
+    body: 'Quru qarışığın bankada necə formalaşdığını izlə.',
   },
   {
     n: '03',
-    title: 'Adını yaz, sifariş et',
-    body: 'Qarışıq sifarişdən sonra ölçülüb qablaşdırılır. Etiketdə sənin verdiyin ad yazılır.',
+    title: 'Adlandır',
+    body: 'Qarışığa ad ver, biz paketləyək.',
   },
 ]
 
-export function Story() {
+export function Story({ onStart }: { onStart: () => void }) {
   return (
     <>
       <section id="hekaye" className="relative py-[18vh]">
@@ -37,14 +37,16 @@ export function Story() {
             <div className="mt-10 space-y-6 font-serif text-[1.02rem] font-light leading-relaxed text-cream/55 text-pretty">
               <Reveal kind="up" delay={120}>
                 <p>
-                  Evdə beş növ çay olur, ikisi işlənir. Qalanı qurudur, çünki heç kim onları
-                  bir-birinə qatmağı ağlına gətirmir — nə qədər, hansı ilə, nə vaxt.
+                  Evdə bir neçə növ çay olur, amma adətən eyni ikisi içilir. Qalanı çox vaxt
+                  elə şkafda qalır — çünki hansı tərkibi nə ilə və nə qədər qatmağın rahat
+                  yolu yoxdur.
                 </p>
               </Reveal>
               <Reveal kind="up" delay={220}>
                 <p>
-                  Burada nisbətlə oynayırsan və nəticəni dərhal görürsən: rəng dəyişir, yarpaq
-                  suya düşür, buxar qalxır. Bəyəndiyini yüz qramlıq bir bağlamaya çevirirsən.
+                  Burada çay bazanı seçir, üstünə sevdiyin otları, meyvələri və ədviyyatları
+                  əlavə edirsən. Qarışığın bankada quru formada canlı görünür və sonda 100
+                  qramlıq fərdi bağlama kimi hazırlanır.
                 </p>
               </Reveal>
               <Reveal kind="up" delay={320}>
@@ -76,7 +78,7 @@ export function Story() {
                 <h3 className="mt-4 font-serif text-[1.6rem] font-light leading-tight text-cream transition-transform duration-700 [transition-timing-function:var(--ease)] group-hover:translate-x-1">
                   {s.title}
                 </h3>
-                <p className="mt-3 font-sans text-[13.5px] leading-relaxed text-cream/45">
+                <p className="mt-3 font-sans text-[13.5px] leading-relaxed text-cream/50">
                   {s.body}
                 </p>
                 <span
@@ -86,6 +88,16 @@ export function Story() {
               </Reveal>
             ))}
           </div>
+
+          <Reveal kind="up" delay={200} className="mt-10 max-w-[38rem]">
+            <p className="font-serif text-[1.02rem] font-light leading-relaxed text-cream/50 text-pretty">
+              17 tərkibdən çay bazanı və sevdiyin dadları seç. Qarışığın bankada canlı
+              formalaşsın, adınla etiketlənsin və 100 qramlıq bağlama kimi hazırlansın.
+            </p>
+            <button type="button" onClick={onStart} className="btn btn-gold mt-6">
+              Qarışıq yarat
+            </button>
+          </Reveal>
         </div>
       </section>
     </>
