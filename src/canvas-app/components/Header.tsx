@@ -104,7 +104,7 @@ export function Header({ cartCount, route }: Props) {
         <div className="flex items-center gap-2.5">
           {onLanding && (
             <Link to={ROUTES.mix} className="btn btn-quiet hidden sm:inline-flex">
-              Qarışıq düzəlt
+              Qarışıq yarat
             </Link>
           )}
           <Link

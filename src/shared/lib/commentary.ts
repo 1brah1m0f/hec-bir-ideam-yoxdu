@@ -122,7 +122,9 @@ export function blendInsight(items: WeighedItem[]): string {
   for (const it of items) {
     const ing = BY_ID[it.ingredientId]
     if (!ing) continue
-    for (const m of ing.mood) moodCount.set(m, (moodCount.get(m) ?? 0) + it.grams)
+    // extras decide the cup's occasion; the base is too heavy in grams to vote 1:1
+    const w = isBase(it.ingredientId) ? it.grams * 0.25 : it.grams * 3
+    for (const m of ing.mood) moodCount.set(m, (moodCount.get(m) ?? 0) + w)
   }
   const topMood = [...moodCount.entries()].sort((a, b) => b[1] - a[1])[0]
   const result = topMood ? MOOD_RESULT[topMood[0]] : null
